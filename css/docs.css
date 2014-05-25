@@ -17,6 +17,12 @@
   .home .content { top: 222px; }
 }
 
+code, pre {
+  color: #fff;
+  background-color: #40406a;
+  border-color: #30305a;
+}
+
 .sidebar {
   position: fixed;
   height: 100%;
@@ -54,6 +60,15 @@
   margin: 20px;
   margin-bottom: 0;
   border-color: #303030;
+}
+
+.section-block {
+  border-top: solid 1px #fff;
+  margin-top: 40px;
+}
+
+.section-block h3 {
+  color: #bcf;
 }
 
 .home .jumbotron {

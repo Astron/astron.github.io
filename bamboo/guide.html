@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Developer's Guide to Bamboo</title>
+
+  <link href="https://netdna.bootstrapcdn.com/bootswatch/3.1.1/darkly/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  <link href="/css/docs.css" rel="stylesheet">
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+
+<div class="sidebar">
+  <!-- Menu Bar -->
+  <nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <a class="navbar-brand" href="/bamboo/index.html">
+      <i class="fa fa-home"></i> Bamboo</a>
+    <ul class="nav navbar-nav">
+      <div class="btn-group">
+        <button id="btn-search" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn dropdown-toggle disabled">
+          <i class="fa fa-search"></i></button>
+        <ul class="dropdown-menu" role="search">
+          <li>Searchbar goes here</li>
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button id="btn-download" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn">
+          <i class="fa fa-download"></i></button>
+        <ul class="dropdown-menu" role="menu">
+          <li id="title-downloads">Distributions</li>
+          <li class="divider"></li>
+          <li><a href="#">Ubuntu 14.04 (.deb)</a></li>
+          <li><a href="#">Gentoo (.ebuild)</a></li>
+          <li><a href="#">Windows 7 (.exe)</a></li>
+          <li><a href="#">Sources (.zip)</a></li>
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button id="btn-menu" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn dropdown-toggle">
+          <i class="fa fa-bars"></i></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="/bamboo/guide.html">Guide to Bamboo</a></li>
+          <li><a href="#">API Reference</a></li>
+          <li><a href="#">DCFile Reference</a></li>
+          <li><a href="#">Contribute to Bamboo</a></li>
+        </ul>
+      </div>
+    </ul>
+  </nav>
+
+  <!-- Page Navigation -->
+  <div class="sidebar-content">
+  <ol class="breadcrumb">
+    <li><a href="/bamboo/index.html">Bamboo</a></li>
+    <li class="active">Developer's Guide</li>
+  </ol>
+
+  <ul class="list-unstyled">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#howbamboo">How do I use bamboo?</a></li>
+    <li><a href="#dynamiccls">Working with dynamic classes</a><ul>
+      <li><a href="#whatclass">What are Distributed Classes?</a></li>
+      <li><a href="#howclass">How do they work?</a></li>
+    </ul></li>
+    <li><a href="#compiledcls">Working with compiled classes</a><ul>
+      <li><a href="#whatobject">What are Distributed Objects?</a></li>
+      <li><a href="#howobject">How do they work?</a></li>
+    </ul></li>
+  </ul>
+
+  </div>
+</div>
+
+<article class="content" role="main">
+  <h1 class="page-header">Developer's Guide to Bamboo</h1>
+
+  <h2>Overview</h2><a name="overview"></a>
+  <p>Welcome to the developer documentation for bamboo – a library for distributed apps to communicate using "objects" instead of messages.</p>
+  <p>This documentation is aimed at C++ and Python developers who want to use objects to communicate in their distributed applications This overview introduces distributed objects in bamboo and tells you what you need to do to get started.</p>
+  <p>API <a href="en/master/api_ref.html">reference documentation</a> is also provided for both languages, as well as <a href="en/master/dcf_ref.html">language</a> and <a href="en/master/dcf_style.html">style</a> guides for writing .dc files.</p>
+
+  <h2>How do I use Bamboo?</h2><a name="howbamboo"></a>
+  <p>There are two major ways to use bamboo:<ol>
+    <li>Classes can be dynamically defined and objects can be dynamically represented.</li>
+    <li><span style="text-decoration: line-through">Classes can be defined in a language-agnostic file and compiled into a language-native class.</span> <strong>(Compiler hasn't been written)</strong></li>
+  </ol>
+  In your distributed application, you can choose to use either method exclusively or use both in tandem in different components.</p>
+  <p>The dynamic tools are most useful to develop components of your system that are agnostic to the actual data or method being processed;  it may also be useful to allowing you to modify the functioning of your system at runtime through the reflection bamboo provides for distributed classes (allowing introspection and modification of classes in a module).</p>
+  <p>The compiled version of the protocol is useful to define distributed objects language-agnostically to be used across multiple components of an application that could easily be written in different languages (currently only C++ and Python, we'll add more bindings soon), which also allows easy communication with any applications that work with dynamical class library.</p>
+
+  <section class="section-block">
+    <h2>Working with dynamically-defined classes<a name="dynamiccls"></a></h2>
+
+    <h3>What are Distributed Classes?<a name="whatclass"></a></h3>
+    <p>A distributed class is a named set of methods and fields that are intended to be accessible between multiple components of a distributed application.  A distributed class could be defined as the interface for a set of remote procedure calls; as a structured blob of data to send between applications; or to be used in more traditional method as template that can be instantiated to create an object and share its functioning across the network.</p>
+    <p>To represent a more simple object which is primarily just a container for data, bamboo also provides an interface for Distributed Structs.</p>
+
+    <h3>How do they work?<a name="howclass"></a></h3>
+    <p>Distributed classes can be defined in files and loaded into a process, or created programtically at runtime. <em>A loaded classes can still be modified after it is read from a file, so it is possible to mix both methods.</em>  Here is a basic example of a class defined in the <code>.dc</code> file format.</p>
+    <pre>
+dclass Account {
+    /* Some basic fields */
+    string username;
+    string email;
+
+    Account(); // optionally, a constructor
+    authenticate(blob password, uint32 nonce); // a method
+};</pre>
+
+    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+
+    <h3>Basic .dc file overview</h3>
+    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+
+    <h3>Basic module API overview</h3>
+    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+
+    <h3>Writing a demo application</h3>
+    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+  </section>
+
+  <section class="section-block">
+    <h2>Working with compiled classes<a name="compiledcls"></a></h2>
+
+    <h3>What are Distributed Objects?<a name="whatobject"></a></h3>
+    <p>A distributed object is like any other normal object in your C++ or Python application: it has methods and fields and is represented by a normal object in your language. The difference, is that a distributed object inherits from the DistributedObject interface which is a lightweight interface that bamboo makes easy to pack up and synchronzie with the rest of your application.</p>
+
+    <h3>How do they work?<a name="howobject"></a></h3>
+    <p>At the moment, Distributed Objects really <em>don't</em> work.  Applications which want to interact with another bamboo application this way must custom-write alot of the code to utilize classes defined in the library (see Astron and libastron for examples of this being done).</p>
+    <p>Typically objects would have a local interface that a process uses to interface with the object and allows it to run logic and make permutations before it would likely automatically call a network interface to synchronize the changes across the distributed application.</p>
+    <p>As bamboo approaches version 1.0, a major goal is to have a compiler or templater allowing distributed class definitions to be compiled or hookable into language-specific classes for easy use in a fast-running application.</p>
+    <p><em>See <a href="">contributing</a> to help bamboo reach this point!</em></p>
+  </section>
+</article>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
+</body>
+</html>
