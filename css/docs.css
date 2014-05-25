@@ -17,10 +17,15 @@
   .home .content { top: 222px; }
 }
 
-code, pre {
-  color: #fff;
+code {
+  color: #ffffff;
   background-color: #40406a;
   border-color: #30305a;
+}
+pre {
+  color: #ffffff;
+  background-color: transparent;
+  border-color: transparent;
 }
 
 .sidebar {

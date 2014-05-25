@@ -113,20 +113,52 @@ dclass Account {
     string username;
     string email;
 
-    Account(); // optionally, a constructor
+    Account(string username, string email = ""); // optionally, a constructor
     authenticate(blob password, uint32 nonce); // a method
 };</pre>
+    <p>For those familiar with C-like syntax, this might seem pretty similar.  A class is given a name and contain any number of declared fields and methods.  A field always has a type and in a dclass will also always have a name (note: it is possible to delcare structs with anonymous fields).  A method has a name followed by any number of arguments.  No implementation for any of the methods is provided, the dclass just defines the interface that two processes can use to interact with eachother's objects.  Too see more details on how distributed classes can be defined see the .dc file <a href="en/master/dcf_ref.html">reference.</a></p>
+    <p>Once you've defined a class in a file, bamboo can be used to read the file into memory and provide reflection on the classes that the file describes.  Distributed classes are grouped in a logical unit called a <em>Module</em>.  A module contains all the classes which define the interface for a particular application-space, for example: you may have a "DatabaseService" module which defines the interaction of an application which a remote database, a "Client" module defining the interactions of the client with the front-facing server, or have imported someone else's API module to make remote calls to an external service.  Many applications will only need one module, like in the case of a networked game where all classes are intended to be part of the same system.</p>
+    <p>We can load a module in to memory and begin inspecting like the following:</p>
 
-    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+    <!-- Code example: Loading and inspecting a file -->
+    <div class="panel panel-default">
+      <ul class="panel-heading nav nav-pills">
+        <li class="active"><a href="#example-loading-cxx" data-toggle="tab">C++</a></li>
+        <li><a href="#example-loading-python" data-toggle="tab">Python</a></li>
+      </ul>
+      <div class="panel-content tab-content">
+        <pre class="tab-pane active" id="example-loading-cxx">
+#include &lt;bamboo/module/Module.h&gt;
+#include &lt;bamboo/dcfile/parse.h&gt;
 
-    <h3>Basic .dc file overview</h3>
-    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+void main() {
+    using bamboo;
+    Module mod = read_dcfile("/path/to/module.dc");
 
-    <h3>Basic module API overview</h3>
-    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+    // Now lets inspect the module
+    printf("Num classes %d", mod.get_num_classes); // prints "1" for the above example
 
-    <h3>Writing a demo application</h3>
-    <p class="text-danger">...  WORK IN PROGRESS ...</p><br>
+    /*
+    Class *foo = mod.get_class(0);
+    Class *bar = mod.get_class_by_name("Account");
+    printf("Is foo == bar? %s", (foo == bar) ? "true" : "false"); // prints "true"
+    */
+}</pre>
+        <pre class="tab-pane" id="example-loading-python">
+# Note: The python API allows both camelCaseNames and slugified_names for function names.
+from bamboo import dcfile
+mod = dcfile.readDCFile("/path/to/module.dc");
+
+# Now lets inspect the module
+print mod.getNumClasses()  # prints "1" for the above example
+foo = mod.getClass(0)
+bar = mod.getClassByName("Account")
+print foo is bar  # prints "true"</pre>
+      </div>
+    </div>
+
+    <p>For more details on distributed class reflection see the <a href="en/master/api_ref.html">API reference</a>.</p>
+    <p>Too play around with bamboo see the downloads link <code style="font-size: 20px">(<i class="fa fa-download"></i>)</code> in the top left hand corner of the page.
   </section>
 
   <section class="section-block">
@@ -145,6 +177,16 @@ dclass Account {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+$('#example-loading-cxx a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+$('#example-loading-python a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
 
 </body>
 </html>
