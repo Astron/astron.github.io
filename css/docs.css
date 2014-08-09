@@ -51,6 +51,11 @@ pre {
   color: #404040;
 }
 
+.dropdown-menu span.disabled {
+  color: #f39c12;
+  padding: 3px 20px;
+}
+
 .sidebar-content {
   margin-top: 20px;
   padding: 20px;
