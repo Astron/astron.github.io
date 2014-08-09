@@ -81,6 +81,37 @@ pre {
   color: #bcf;
 }
 
+.biglist {
+  max-width: 984px;
+  padding-top: 20px;
+}
+
+.biglist li {
+  float: left;
+  width: 350px;
+  margin: 20px 40px;
+}
+
+.biglink > a {
+  font-size: 1.3em;
+  line-height: 150%;
+}
+
+.bigicon {
+  display: inline-block;
+  font-size: 40px;
+  padding: 5px;
+}
+
+.biglink {
+  display: inline-block;
+}
+
+.linkdescr {
+  font-style: italic;
+  line-height: 150%;
+}
+
 .home .jumbotron {
   max-width: 1024px;
   margin-bottom: 0px;
