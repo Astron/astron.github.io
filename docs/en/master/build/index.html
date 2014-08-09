@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+  <title>AstronDocs - Building Astron</title>
+  <link rel="stylesheet" href="normalize.min.css">
+</head>
+<body>
+  <h1>AstronDocs - How to build Astron</h1>
+  <h2>Getting a copy of the code</h2>
+  <p>Astron is available on GitHub through Git or Subversion cloning.</p>
+  <p>On your machine clone with:
+  git clone https://github.com/Astron/Astron.git</p>
+  <p>OR:
+  svn checkout https://github.com/Astron/Astron</p>
+  <h2>Dependencies</h2>
+  <p>Astron has two dependencies: libyaml-cpp and boost.</p>
+  <p>Get the boost library from <a href="http://www.boost.org/users/download/">here</a>, or install from a package on linux. Very old versions of the boost library may not work as there are dependencies on some features of boost::asio and boost::icl. In some environments, you may have to set the BOOST_ROOT or BOOSTROOT environment variable to the root of your compiled boost libraries.</p>
+  <p>You can download the libyaml-cpp dependency directly from <a href="https://yaml-cpp.googlecode.com/files/yaml-cpp-0.5.1.tar.gz">here</a>. This dependency should typically be compiled and placed directly underneath the Astron/dependencies folder.</p>
+  <p>Now that you have the depencies you can build!</p>
+  <p>We use CMAKE to handle cross-platform compiling. See the individual guides for the compiler you intend on using:</p>
+  <ul>
+  <li>Linux/Make : <a href="linux-other.html">Go!</a></li>
+  <li>Windows/VisualStudio : <a href="windows.html">Go!</a> </li>
+  </ul>
+
+</body>
+</html>
