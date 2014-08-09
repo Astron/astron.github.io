@@ -1,6 +1,6 @@
 html, body, #container { height: 100%; }
 
-a { position: absolute; top: 50%; left: 50%; margin-top: -75px; margin-left: -230px; }
+img { position: absolute; top: 50%; left: 50%; margin-top: -75px; margin-left: -230px; }
 .landing { position: relative; background-color: #2c463e; }
 .landing:hover { background-color: #3c564e; }
 
