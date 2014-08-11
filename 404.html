@@ -4,12 +4,86 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width">
-  <title>AstronDocs - 404 bro</title>
-  <link rel="stylesheet" href="css/normalize.min.css">
+
+  <title>AstronDocs - yo, 404</title>
+
+  <link href="https://netdna.bootstrapcdn.com/bootswatch/3.2.0/darkly/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+  <link href="/css/docs.css" rel="stylesheet">
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 </head>
 <body>
-  <h1>AstronDocs - you 404'd me bro</h1>
-  <p>Not sure what gibberish you typed into the url bar, but whatever it is you 404'd me.</p>
-  <p>You may want to go back to the home page at <a href="https://astron.github.io">https://astron.github.io</a></p>
+
+<div class="sidebar">
+  <!-- Menu Bar -->
+  <nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <a class="navbar-brand" href="/astron/index.html">
+      <i class="fa fa-home"></i> Astron</a>
+    <ul class="nav navbar-nav">
+      <div class="btn-group">
+        <button id="btn-search" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn dropdown-toggle disabled">
+          <i class="fa fa-search"></i></button>
+        <ul class="dropdown-menu" role="search">
+          <li>Searchbar goes here</li>
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button id="btn-download" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn">
+          <i class="fa fa-download"></i></button>
+        <ul class="dropdown-menu" role="menu">
+          <li id="title-downloads">Distributions</li>
+          <li class="divider" />
+          <li><span class="disabled">No packages</span></li>
+          <!--<li><a href="#">Ubuntu 14.04 (.deb)</a></li>-->
+          <!--<li><a href="#">Gentoo (.ebuild)</a></li>-->
+          <!--<li><a href="#">Windows 7 (.exe)</a></li>-->
+          <!--<li><a href="#">Sources (.zip)</a></li>-->
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button id="btn-menu" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn dropdown-toggle">
+          <i class="fa fa-bars"></i></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="index.html">Main Page</a></li>
+        </ul>
+      </div>
+    </ul>
+  </nav>
+
+  <!-- Page Navigation -->
+  <div class="sidebar-content">
+  <ol class="breadcrumb">
+    <li><a href="index.html">AstronDocs</a></li>
+    <li class="active">Table of Contents</li>
+  </ol>
+
+  <ul class="list-unstyled">
+  </ul>
+
+  </div>
+</div>
+
+
+<article class="content" role="main">
+  <h1 class="page-header">404 yo</h1>
+
+  <ul class="list-unstyled biglist">
+    <li>
+      <p>Hey, just wanted to let you know: this page doesn't exist.</p>
+      <p>If you're a monkey, you may understand that you have just "404'd".</p>
+      <p>You should go to the <a href="linux-other.html">Main Page</a>.</p>
+    </li>
+  </ul>
+</article>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>
