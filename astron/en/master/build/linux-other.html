@@ -4,34 +4,111 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width">
-  <title>AstronDocs - Building on Linux</title>
-  <link rel="stylesheet" href="normalize.min.css">
+
+  <title>AstronDocs - Building Astron on Linux</title>
+
+  <link href="https://netdna.bootstrapcdn.com/bootswatch/3.2.0/darkly/bootstrap.min.css" rel="stylesheet">
+  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
+  <link href="/css/docs.css" rel="stylesheet">
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  <![endif]-->
 </head>
 <body>
-  <h1>AstronDocs - How to build Astron on Linux with GNU Make</h1>
-  <h2>Dependencies</h2>
-  <p>You will need to, of-course, clone the repository. After you have the repository you will need to 
-  download and build Astron's dependencies. See <a href="index.html">here</a> for instructions.</p>
-  <h2>Compiling</h2>
-  <p>After setting up your environment you can compile with any of the following:</p>
-  <h3>For release:</h3>
-  <p>cmake -DCMAKE_BUILD_TYPE=Release . && make</p>
-  <h3>For development (with Trace and Debug messages):</h3>
-  <p>cmake -DCMAKE_BUILD_TYPE=Debug . && make</p>
-  <h3>For development (without Trace and Debug messages):</h3>
-  <p>cmake . && make</p>
-  <h2>Handling Build Artifacts</h2>
-  <p>When contributing to the Astron repository or a branch you should not add build artifacts to your commit.
-  Since build artifacts vary wildly between all the operating systems and compilers that Astron will compile 
-  with, they are not included in the .gitignore file.</p>
-  <p>Instead, edit the .git/info/exclude file for your local clone.</p>
-  <p>The following should be added for GNU Make on Linux: </p>
-  <p>## Compilation Artifacts ##</p>
-  <p>astrond</p>
-  <p>*.[oa]</p>
-  <p>CMakeCache.txt</p>
-  <p>CMakeFiles/</p>
-  <p>cmake_install.cmake</p>
-  <p>Makefile</p>
+
+
+<div class="sidebar">
+  <!-- Menu Bar -->
+  <nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <a class="navbar-brand" href="/astron/index.html">
+      <i class="fa fa-home"></i> Astron</a>
+    <ul class="nav navbar-nav">
+      <div class="btn-group">
+        <button id="btn-search" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn dropdown-toggle disabled">
+          <i class="fa fa-search"></i></button>
+        <ul class="dropdown-menu" role="search">
+          <li>Searchbar goes here</li>
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button id="btn-download" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn">
+          <i class="fa fa-download"></i></button>
+        <ul class="dropdown-menu" role="menu">
+          <li id="title-downloads">Distributions</li>
+          <li class="divider" />
+          <li><span class="disabled">No packages</span></li>
+          <!--<li><a href="#">Ubuntu 14.04 (.deb)</a></li>-->
+          <!--<li><a href="#">Gentoo (.ebuild)</a></li>-->
+          <!--<li><a href="#">Windows 7 (.exe)</a></li>-->
+          <!--<li><a href="#">Sources (.zip)</a></li>-->
+        </ul>
+      </div>
+      <div class="btn-group">
+        <button id="btn-menu" type="button" data-toggle="dropdown"
+          class="btn btn-default navbar-btn dropdown-toggle">
+          <i class="fa fa-bars"></i></button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="/astron/en/master/tutorial.html">Tutorial</a></li>
+          <li><a href="/astron/en/master/config_ref.html">Config Reference</a></li>
+          <li><a href="/bamboo/en/master/dcf_ref.html">DCFile Reference</a></li>
+          <li><a href="/astron/en/master/contribute.html">Contribute to Astron</a></li>
+        </ul>
+      </div>
+    </ul>
+  </nav>
+
+  <!-- Page Navigation -->
+  <div class="sidebar-content">
+  <ol class="breadcrumb">
+    <li><a href="/astron/index.html">Astron</a></li>
+    <li class="active">Table of Contents</li>
+  </ol>
+
+  <ul class="list-unstyled">
+  </ul>
+
+  </div>
+</div>
+
+<article class="content" role="main">
+  <h1 class="page-header">Astron Building Beginning</h1>
+
+  <ul class="list-unstyled biglist">
+    <li>
+      <h1>AstronDocs - How to build Astron on Linux with GNU Make</h1>
+      <h2>Dependencies</h2>
+      <p>You will need to, of-course, clone the repository. After you have the repository you will need to 
+      download and build Astron's dependencies. See <a href="index.html">here</a> for instructions.</p>
+      <h2>Compiling</h2>
+      <p>After setting up your environment you can compile with any of the following:</p>
+      <h3>For release:</h3>
+      <p>cmake -DCMAKE_BUILD_TYPE=Release . && make</p>
+      <h3>For development (with Trace and Debug messages):</h3>
+      <p>cmake -DCMAKE_BUILD_TYPE=Debug . && make</p>
+      <h3>For development (without Trace and Debug messages):</h3>
+      <p>cmake . && make</p>
+      <h2>Handling Build Artifacts</h2>
+      <p>When contributing to the Astron repository or a branch you should not add build artifacts to your commit.
+      Since build artifacts vary wildly between all the operating systems and compilers that Astron will compile 
+      with, they are not included in the .gitignore file.</p>
+      <p>Instead, edit the .git/info/exclude file for your local clone.</p>
+      <p>The following should be added for GNU Make on Linux: </p>
+      <p>## Compilation Artifacts ##</p>
+      <p>astrond</p>
+      <p>*.[oa]</p>
+      <p>CMakeCache.txt</p>
+      <p>CMakeFiles/</p>
+      <p>cmake_install.cmake</p>
+      <p>Makefile</p>
+    </li>
+  </ul>
+</article>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>
