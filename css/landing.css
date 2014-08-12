@@ -1,15 +1,15 @@
 html, body, #container { height: 100%; }
 
 img { position: absolute; top: 50%; left: 50%; margin-top: -75px; margin-left: -230px; }
-.landing { position: relative; background-color: #2c463e; }
-.landing:hover { background-color: #3c564e; }
+.landing { position: relative; background-color: #474747; }
+.landing:hover { background-color: #525252; }
 
 #astron {
   text-align: center;
 
   margin: auto;
   width: 100%;
-  height: 50%;
+  height: 49.5%;
 }
 
 #bamboo {
@@ -17,5 +17,13 @@ img { position: absolute; top: 50%; left: 50%; margin-top: -75px; margin-left: -
 
   margin: auto;
   width: 100%;
-  height: 50%;
+  height: 49.5%;
+}
+
+#divider {
+  background-color: #222222;
+
+  margin: auto;
+  width: 100%;
+  height: 1%;
 }
