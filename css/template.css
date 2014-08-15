@@ -1,0 +1,103 @@
+body {
+  margin: 0px;
+  text-align: center;
+
+  background-color: #4d4d4d;
+  color: #FFF; /* White! */
+
+  /* Fix this temporary hack. */
+  font-family: Tahoma;
+  font-size: 12px;
+}
+
+.navbar {
+  /* The "size" settings for the nav bar */
+  width: 100%;
+  min-width: 100%;
+  height: 100px;
+  min-height: 100px;
+
+  /* The actual styling of the nav bar, and keeping it in place. */
+  background-color: #2d2d2d;
+  position: fixed;
+  text-align: center;
+}
+
+.navbar_bottom {
+  background-color: #8b68ff;
+  min-height: 10px;
+  height: 10px;
+  margin-top:-5px;
+}
+
+.navbar_padding {
+  width: 100%;
+  min-width: 100%;
+  height: 100px;
+  min-height: 100px;
+}
+
+/* Block bg-color: 767676 */
+
+.main {
+  margin: 0 auto;
+  max-width: 875px;
+}
+
+.block {
+  background-color: #767676;
+  border-radius: 7px;
+  padding: 10px;
+  margin-bottom: 35px;
+}
+
+.content {
+  margin: auto;
+  width: 600px;
+  float: left;
+  text-align: left;
+}
+
+.sidebar {
+  width: 250px;
+  float: right;
+}
+
+.footer {
+  /* Stretches across screen */
+  width: 100%;
+  min-width: 100%;
+  height: 20px;
+  min-height: 20px;
+  /* Stays at the bottom of the page */
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  padding: 5px;
+
+  background-color: #2d2d2d;
+  text-align: center;
+  vertical-align: middle;
+  color: white;
+}
+
+.footer_padding {
+  width: 100%;
+  min-width: 100%;
+  height: 20px;
+  min-height: 20px;
+  padding-top: 25px;
+  padding-bottom: 5px;
+}
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+h1 {
+  font: 14pt arial;
+  color: #fff;
+  border-bottom: 300px;
+
