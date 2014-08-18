@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Bamboo &mdash; reference</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/bamboo.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/bamboo/index.html">
+        <img src="/images/bamboo-461px.png" alt="Bamboo">
+      </a>
+
+      <nav>
+  <a href="/bamboo/index.html">Home</a>
+  <a href="/bamboo/en/master/guide.html">Guide</a>
+  <a href="/bamboo/en/master/reference.html">Reference</a>
+  <a href="https://github.com/Astron/Bamboo"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs">
+
+  <aside class="toc">
+    <h4>Getting Started</h4>
+    <ul>
+      <li><a href="guide.html">Welcome</a></li>
+    </ul>
+
+    <h4>Project Reference</h4>
+    <ul>
+      <li><a href="reference.html">Example Reference</a></li>
+    </ul>
+  </aside>
+
+  <article class="content">
+    <h1 id="dcfile-language-specification">DCFile Language Specification</h1>
+<p class="alert alert-warning">
+  <strong>Warning:</strong> This page is a work in progress and only describes comments in DCFiles.
+  <em>Totally useful right?</em>
+</p>
+
+<p>This is a reference manual for the DCFile distributed class description format.
+It can and should be used as a reference to help understand the features and
+concepts of the <code>.dc</code> file format. This reference is not arranged as a linear
+tutorial, but rather as an overview of all features and concepts in DCFiles.</p>
+<p>The <code>.dc</code> file format is intended to describe the objects that take part in
+network and interprocess communication within a larger application.</p>
+<hr>
+<h2 id="basic-lexical-elements">Basic Lexical Elements</h2>
+<p>A <code>.dc</code> will often look fairly similar to a C++ header file that defines the
+classes, structures, and methods of an application. The syntax and grammar of
+the language are both very similar.</p>
+<p>Like C/C++/Java, DCFiles use semicolons <code>;</code> to separate declarations onto their
+own logical lines. Being an interface description language, a .dc file does not
+have any statements, though certain declarations accept expressions -- primarily
+to declare default values. Similarily, when defining a class or data-structure,
+curly-braces <code>{ ... }</code> are used to delineate blocks.</p>
+<h3 id="comments">Comments</h3>
+<p>Comments in a .dc file are again in the style of C/C++/Java.</p>
+<p>A <code>//</code> can be used to comment out the remainder of a line.</p>
+<pre><code class="lang-dcf">// ie. a typical single-line comment
+</code></pre>
+<p>and the <code>/* ... */</code> recipe can be used for block-comments.</p>
+<pre><code class="lang-dcf">/*
+ * This is an example of a multi-line comment.
+ *
+   Note: the asterisk on each line is a stylistic choice in comments, not required.
+ */
+</code></pre>
+<h3 id="primitive-value-types">Primitive Value Types</h3>
+<p><strong>TODO</strong></p>
+<hr>
+<h2 id="structured-values">Structured Values</h2>
+<h3 id="defining-a-struct">Defining a Struct</h3>
+<h3 id="fields">Fields</h3>
+<hr>
+<h2 id="classes">Classes</h2>
+<h3 id="defining-a-class">Defining a Class</h3>
+<h3 id="fields-in-classes">Fields in CLasses</h3>
+<h3 id="methods">Methods</h3>
+<h3 id="molecular-fields">Molecular Fields</h3>
+<hr>
+<h2 id="typedefs">Typedefs</h2>
+<hr>
+<h2 id="keywords">Keywords</h2>
+<hr>
+<h2 id="imports">Imports</h2>
+<hr>
+<h2 id="advanced-types">Advanced Types</h2>
+<h3 id="using-arrays">Using arrays</h3>
+<h3 id="limiting-string-and-array-sizes-with-ranges">Limiting string and array sizes with ranges</h3>
+<h3 id="limiting-numerics-with-ranges">Limiting numerics with ranges</h3>
+<h3 id="constraining-numerics-with-modulus">Constraining numerics with modulus</h3>
+<h3 id="using-fixed-point-fractional-numbers">Using fixed-point fractional numbers</h3>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are ©&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

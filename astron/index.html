@@ -1,99 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
 
-  <title>Astron - MMO Server</title>
+  <title>Astron &mdash; a distributed game server</title>
 
-  <link href="https://netdna.bootstrapcdn.com/bootswatch/3.2.0/darkly/bootstrap.min.css" rel="stylesheet">
-  <link href="https://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">
-  <link href="/css/docs.css" rel="stylesheet">
-  <!--[if lt IE 9]>
-    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-  <![endif]-->
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
 </head>
-<body class="home">
+<body>
 
-<div class="sidebar">
-  <!-- Menu Bar -->
-  <nav class="navbar navbar-default navbar-static-top" role="navigation">
-    <a class="navbar-brand" href="/astron/index.html">
-      <i class="fa fa-home"></i> Astron</a>
-    <ul class="nav navbar-nav">
-      <div class="btn-group">
-        <button id="btn-search" type="button" data-toggle="dropdown"
-          class="btn btn-default navbar-btn dropdown-toggle disabled">
-          <i class="fa fa-search"></i></button>
-        <ul class="dropdown-menu" role="search">
-          <li>Searchbar goes here</li>
-        </ul>
-      </div>
-      <div class="btn-group">
-        <button id="btn-download" type="button" data-toggle="dropdown"
-          class="btn btn-default navbar-btn">
-          <i class="fa fa-download"></i></button>
-        <ul class="dropdown-menu" role="menu">
-          <li id="title-downloads">Distributions</li>
-          <li class="divider" />
-          <li><span class="disabled">No packages</span></li>
-          <!--<li><a href="#">Ubuntu 14.04 (.deb)</a></li>-->
-          <!--<li><a href="#">Gentoo (.ebuild)</a></li>-->
-          <!--<li><a href="#">Windows 7 (.exe)</a></li>-->
-          <!--<li><a href="#">Sources (.zip)</a></li>-->
-        </ul>
-      </div>
-      <div class="btn-group">
-        <button id="btn-menu" type="button" data-toggle="dropdown"
-          class="btn btn-default navbar-btn dropdown-toggle">
-          <i class="fa fa-bars"></i></button>
-        <ul class="dropdown-menu" role="menu">
-          <li><a href="/astron/en/master/tutorial.html">Tutorial</a></li>
-          <li><a href="/astron/en/master/config_ref.html">Config Reference</a></li>
-          <li><a href="/bamboo/en/master/dcf_ref.html">DCFile Reference</a></li>
-          <li><a href="/astron/en/master/contribute.html">Contribute to Astron</a></li>
-        </ul>
-      </div>
-    </ul>
-  </nav>
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
 
-  <!-- Page Navigation -->
-  <div class="sidebar-content">
-  <ol class="breadcrumb">
-    <li><a href="/astron/index.html">Astron</a></li>
-    <li class="active">Home</li>
-  </ol>
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/reference.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
 
-  <ul class="list-unstyled">
-    <li>Languages<ul><li><a href="/astron/en/master/index.html">English</a></li></ul></li>
-  </ul>
+
+    </div>
+  </header>
+
+
+<div id="version-flash" class="flash alert alert-danger">
+  <i class="flash-close fa fa-chevron-up"></i></a>
+
+  <strong>Read first:</strong>
+  Astron is still a young project, and is not ready for use in new projects.<br />
+  <br />
+  For more info, see Astron's
+  <a href="https://github.com/Astron/Astron/milestones">milestones</a>.
+</div>
+<script type="text/javascript">
+// Add click handler for the close button
+$('#version-flash').click(function() {
+  $('#version-flash').slideUp(100);
+  setCookie('didHideVersionWarning', 'yes', 1);
+});
+
+// Flash the warning if the user hasn't hidden it already
+$(document).ready(function() {
+  var didHide = getCookie('didHideVersionWarning');
+  if(didHide != 'yes') {
+    $('#version-flash').slideDown();
+  }
+});
+</script>
+
+
+<div class="container">
+  <p class="lead">Build games designed to be massive.</p>
+  <div class="justified-large">
+    <p>Astron is a framework that handles networking between the components of your application with
+    high availability guarantees, and is designed to scale for massively many concurrent users.</p>
+
+    <div id="system-diagram">
+      <div class="system--application">
+        <h1>Application</h1>
+        <figure class="application-component">
+          <div class="image"><i class="fa fa-desktop"></i></div>
+          <div class="caption">Client</div>
+        </figure>
+        <figure class="application-component">
+          <div class="image"><i class="fa fa-gears"></i></div>
+          <div class="caption">Server</div>
+        </figure>
+        <figure class="application-component">
+          <div class="image"><i class="fa fa-database"></i></div>
+          <div class="caption">Database</div>
+        </figure>
+        <figure class="application-component">
+          <div class="image"><i class="fa fa-gamepad"></i></div>
+          <div class="caption">Fun</div>
+        </figure>
+      </div>
+
+      <h1 class="system--heart">
+        <a target="_blank"href="https://www.youtube.com/watch?v=kkmEsKpc-7I">
+        <i class="fa fa-heart"></i></a>
+      </h1>
+
+      <div class="system--astron">
+        <h1>Astron</h1>
+        <figure class="astron-component">
+          <div class="image"><i class="fa fa-sitemap"></i></div>
+          <div class="caption">Daemon</div>
+        </figure>
+        <figure class="astron-component">
+          <div class="image"><i class="fa fa-book"></i></div>
+          <div class="caption">Library</div>
+        </figure>
+      </div>
+    </div>
 
   </div>
 </div>
 
-<div class="jumbotron" role="banner">
-  <img id="banner" src="/images/astron-black-461px.png" alt="Astron">
-</div>
-<article class="content" role="main">
-  <h2>Welcome To Astron</h2>
-
-  <ul class="list-unstyled biglist">
-    <li>
-      <div class="bigicon">En</div>
-      <div class="biglink">
-        <a class="text-info" href="/astron/en/master/index.html">English</a><br />
-        <span class="linkdescr">english docs and guides</span>
-      </div>
-    </li>
-
-    <li><!-- For spacing --></li>
-  </ul>
-</article>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
-
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are ©&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
 </body>
 </html>
+
