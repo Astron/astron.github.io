@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; C++ Style guide</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-reference section-Contributing">
+
+  <aside class="toc">
+  <h4>Contributing</h4>
+  <ul>
+    <li><a href="style-readme.html">Style Conventions</a></li>
+    <li><a href="style-cxx.html">C++ Style guide</a></li>
+  </ul>
+  <h4>Client Protocol</h4>
+  <ul>
+    <li><a href="10-client.html">Client Messages</a></li>
+  </ul>
+  <h4>Internal Protocol</h4>
+  <ul>
+    <li><a href="00-message-encoding.html">Message Format</a></li>
+    <li><a href="19-messagedirector.html">Control Messages</a></li>
+    <li><a href="11-clientagent.html">ClientAgent Messages</a></li>
+    <li><a href="12-stateserver.html">StateServer Messages</a></li>
+    <li><a href="13-dbserver.html">Database Messages</a></li>
+</aside>
+
+
+  <article class="content">
+    <h1 id="c-style-guide">C++ Style Guide</h1>
+<p>Pull requests will not be merged until styling issues have been fixed.<br>Pull requests with bad style are less likely to be accepted.</p>
+<h2 id="formatting">Formatting</h2>
+<h3 id="line-length">Line Length</h3>
+<p>Each line of text should be at most 100 characters long.</p>
+<h3 id="indentation">Indentation</h3>
+<p>Use only spaces, not tabs.  Indent with 4 spaces at a time.<br>The contents of namespaces are not indented.  </p>
+<p>Class/struct access specifiers should be indented 2 spaces.</p>
+<pre><code>class Foo
+{
+  public:
+    Foo();
+};
+</code></pre><p>Case statements should be at the same indentation as their switch, with indented logic.</p>
+<pre><code>switch(day) {
+case Monday:
+    return 1;
+case Tuesday:
+    return 2;
+default:
+    return 0;
+}
+</code></pre><h3 id="braces">Braces</h3>
+<p>Braces for control statements should be attached.<br>Class and function braces should be on their own line (unless its for an empty block).<br>Control statements should use consistent braces (ie. if the <code>if</code> uses braces so should the <code>else</code>.)</p>
+<h3 id="whitespace">Whitespace</h3>
+<p>There should be no space between a conditional and its condition (<code>if(foo)</code>).<br>There should be a space between a control statement and its brace (<code>switch(val) {</code>).<br>There should be no space between template specifiers and their template arguments.<br>Nested template specifiers should have spaces between right angle-brackets.<br>Prefer no spaces inside parentheses (<code>while(true)</code> vs <code>while( true )</code>).  </p>
+<h3 id="newlines">Newlines</h3>
+<p>Source files should end with a newline.<br>Short conditional statements may be written on one line if this enhances readability.<br>When declaring nested namespaces, put each namespace on its own line.<br>If statements should be broken before the logical operator.  </p>
+<h2 id="naming">Naming</h2>
+<h3 id="variable-names">Variable Names</h3>
+<p>Variables should have a descriptive lowercase name, where words are seperated by underscores.<br>Member variables should start with <code>m_</code>.  Global variables should start with <code>g_</code>.  </p>
+<p>Example: <code>field_count</code> or</p>
+<pre><code>class Foo
+{
+  private:
+    int m_my_number;
+};
+</code></pre><h3 id="function-names">Function Names</h3>
+<p>Functions should have a descriptive lowercase name, where words are seperated by underscores.</p>
+<h3 id="class-names">Class Names</h3>
+<p>Class names should be in CamelCase</p>
+<p>Example: <code>DistributedObject</code></p>
+<h3 id="typedefs">Typedefs</h3>
+<p>Typedefs should have a descriptive lower-case name, ending with <code>_t</code>.<br>Non-standard/very-complicated typedefs should moonlight with class names.  </p>
+<p>Example: <code>typedef unsigned int uint32_t</code><br>Example: <code>typedef std::unordered_set&lt;const Foo*, CompareFooPtr&gt; FooSet</code>  </p>
+<h2 id="header-files">Header Files</h2>
+<h3 id="header-guards">Header Guards</h3>
+<p>Astron uses <code>#pragma once</code> as a header guard.  All headers should have this line as the first
+non-comment line in the file.  Guards <strong>SHOULD NOT</strong> use the <code>#ifndef</code> and <code>#define</code> semantics.</p>
+<h3 id="inline-functions">Inline Functions</h3>
+<p>Functions should only be defined inline when they are small (~10 lines or less).</p>
+<h3 id="function-parameter-ordering">Function Parameter Ordering</h3>
+<p>Functions parameters should be ordered with inputs preceding outputs.</p>
+<h3 id="names-and-order-of-includes">Names and Order of Includes</h3>
+<p>Include paths should include the full path from the <code>src/</code> directory, with the exception of the
+header file corresponding to this file (ie. <code>foo.cxx</code> should use <code>#include &quot;foo.h&quot;</code>).
+Internal includes should use quotations and external includes should use angle brackets.</p>
+<p>Include order:</p>
+<ol>
+<li>Header file corresponding to this source file (if exists)</li>
+<li>C system files</li>
+<li>C++ system files</li>
+<li>External headers</li>
+<li>Internal headers (ordered by logical dependency)</li>
+</ol>
+<h2 id="miscellaneous">Miscellaneous</h2>
+<h3 id="function-arguments">Function Arguments</h3>
+<p>Types from stl should be passed by constant reference <code>const ref&amp;</code> whenever possible.</p>
+<h3 id="local-variables">Local Variables</h3>
+<p>Initialize local variables as soon as they are declared.<br>Declare local variables as close to the first use as possible.  </p>
+<h3 id="member-variables">Member Variables</h3>
+<p>Simple member variables should use in-class member initializations.<br>More complex member variables and variables set by arguments should be initialized in a constructor.  </p>
+<h3 id="explicit-constructors">Explicit Constructors</h3>
+<p>Use the C++ keyword <code>explicit</code> for constructors with one argument.<br>If a conversion is intended, it should be clearly marked with comments.  </p>
+<h3 id="copy-constructors">Copy Constructors</h3>
+<p>Disable copy and assignment operators with <code>= delete;</code>.<br>If a copy constructor is necessary, provide both a copy constructor and assignment operator.  </p>
+<h3 id="operator-overloading">Operator Overloading</h3>
+<p>When implementing comparison operators, provide an implementation for all six of them.<br>Comparison operators should be declared outside of a class (as non-member functions).<br>Don&#39;t overload other operators -- if you need to, follow normal C++ semantics.  </p>
+<h3 id="iterators">Iterators</h3>
+<p>Use prefix form (<code>++i</code>) of the increment and decrement operators with iterators.<br>Complex iterator types should use the <code>auto</code> keyword. Never use <code>auto</code> for anything else.  </p>
+<h3 id="integer-types">Integer Types</h3>
+<p>Of the built-in C++ integer types, only use <code>int</code> and <code>unsigned int</code>.<br>If a variable is always of a specific size, use precise-width integers.  </p>
+<h3 id="null-values">Null Values</h3>
+<p>Use <code>nullptr</code> instead of <code>NULL</code>.</p>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

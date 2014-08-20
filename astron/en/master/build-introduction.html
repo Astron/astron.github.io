@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; Introduction</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-guide section-Build from Source">
+
+  <aside class="toc">
+  <h4>Getting Started</h4>
+  <ul>
+    <li><a href="guide.html">Welcome</a></li>
+  </ul>
+  <h4>Build from Source</h4>
+  <ul>
+    <li><a href="build-introduction.html">Introduction</a></li>
+    <li><a href="build-linux-other.html">Build on Linux</a></li>
+    <li><a href="build-windows.html">Build on Windows</a></li>
+</aside>
+
+
+  <article class="content">
+    <h1 id="building-astron-from-source">Building Astron from Source</h1>
+<p>This section explains how to compile Astron from source.</p>
+<p>You will need to have a C++ compiler appropriate for your machine
+(see <a href="#supported-platforms">Supported Platforms</a> below).</p>
+<p>Building Astron provides a couple benefits over installing it from a package:</p>
+<ol>
+<li>Astron doesn&#39;t yet provide packages, so compiling it actually
+the <em>ONLY</em> way to work with it.</li>
+<li>Unused features can be compiled out to save space in ram and hopefully
+save space in the instruction cache.</li>
+<li>Astron can be compiled with more (or less depending on your distribution)
+debug output.  Debug output is useful for development, but should be compiled
+out in production to see best performance.</li>
+</ol>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="download-the-source">Download the Source</h3>
+<p>Astron is available on <a href="https://github.com/Astron/Astron">GitHub</a> through Git.</p>
+<p>Run this command locally:</p>
+<pre><code class="lang-sh">git clone https://github.com/Astron/Astron.git
+</code></pre>
+<h3 id="dependencies">Dependencies</h3>
+<p>Astron requires a compiler supporting most of the C++11 standard.</p>
+<p>Astron also depends on a couple third party libraries:</p>
+<ul>
+<li>boost 1.55+</li>
+<li>libyaml-cpp 0.5+</li>
+</ul>
+<p>Get the boost library from <a href="http://www.boost.org/users/download/">here</a>, or
+install from a package on linux or OS X (with <a href="http://brew.sh/">Homebrew</a>.</p>
+<p>In some environments Boost is not automatically detected, and you may have to
+set the <code>BOOST_ROOT</code> environment variable as the root directory of your compiled
+or packaged boost libraries.</p>
+<p>Newer versions of Linux (or Homebrew) may have a libyaml-cpp 0.5+ available as
+a package; otherwise, you can download the libyaml-cpp dependency directly from</p>
+<h2 id="compiling">Compiling</h2>
+<h3 id="configure-astron">Configure Astron</h3>
+<p>Astron uses CMake to handle cross-platform compiling.</p>
+<p>Compile-option documention is still [in-progress](. Using CMake GUI is the other
+easiest way to see the available compile options with descriptions of what they
+do. Astron tries to use intelligent defaults, so if you are just beginning with
+Astron let CMake choose smart default values and should compile fine.</p>
+<h3 id="supported-platforms">Supported Platforms</h3>
+<ul>
+<li><a href="build-linux-other.html">Linux / Make</a></li>
+<li><a href="build-windows.html">Windows / Visual Studio</a></li>
+</ul>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
 
-  <title>Astron &mdash; Welcome</title>
+  <title>Astron &mdash; Build on Linux</title>
 
   <!-- CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
@@ -39,7 +39,7 @@
 
 <hr class="top" />
 
-<div class="container docs group-guide section-Getting Started">
+<div class="container docs group-guide section-Build from Source">
 
   <aside class="toc">
   <h4>Getting Started</h4>
@@ -55,11 +55,36 @@
 
 
   <article class="content">
-    <h1 id="guide-tutorial">Guide / Tutorial</h1>
-<p>Welcome to the Astron guide / tutorial.</p>
-<p>Unfortunately, the welcome page is a stub for the next little bit while its being built.</p>
-<p>Feel free to ask for help on IRC at <a href="https://freenode.net">irc.freenode.net</a> on channel <strong>#Astron</strong>.</p>
-
+    <h1 id="building-on-linux-other">Building on Linux / Other</h1>
+<h2 id="compiling">Compiling</h2>
+<p>First read through <a href="build-introduction.html">building astron from source</a>, if you haven&#39;t done so
+already, to set up Astron&#39;s build environment.</p>
+<p>After setting up your environment you can compile with any of the following:</p>
+<p>For release:</p>
+<pre><code class="lang-sh">cmake -DCMAKE_BUILD_TYPE=Release . &amp;&amp; make
+</code></pre>
+<p>For development (with Trace and Debug messages):</p>
+<pre><code class="lang-sh">cmake -DCMAKE_BUILD_TYPE=Debug . &amp;&amp; make
+</code></pre>
+<p>For development (without Trace and Debug messages):</p>
+<pre><code class="lang-sh">cmake . &amp;&amp; make
+</code></pre>
+<hr>
+<h2 id="building-to-contribute">Building to Contribute</h2>
+<h3 id="handling-build-artifacts">Handling Build Artifacts</h3>
+<p>When contributing to the Astron repository or a branch you should not add build
+artifacts to your commit.  Since build artifacts vary wildly between all the
+operating systems and compilers that Astron will compile with, they are not
+included in the <code>.gitignore</code> file.</p>
+<p>Instead, edit the <code>.git/info/exclude</code> file for your local clone.</p>
+<p>The following lines should be added for GNU Make on Linux:</p>
+<pre><code>astrond
+*.[oa]
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+</code></pre>
   </article>
 
 </div>

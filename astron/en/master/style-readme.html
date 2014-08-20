@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; Style Conventions</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-reference section-Contributing">
+
+  <aside class="toc">
+  <h4>Contributing</h4>
+  <ul>
+    <li><a href="style-readme.html">Style Conventions</a></li>
+    <li><a href="style-cxx.html">C++ Style guide</a></li>
+  </ul>
+  <h4>Client Protocol</h4>
+  <ul>
+    <li><a href="10-client.html">Client Messages</a></li>
+  </ul>
+  <h4>Internal Protocol</h4>
+  <ul>
+    <li><a href="00-message-encoding.html">Message Format</a></li>
+    <li><a href="19-messagedirector.html">Control Messages</a></li>
+    <li><a href="11-clientagent.html">ClientAgent Messages</a></li>
+    <li><a href="12-stateserver.html">StateServer Messages</a></li>
+    <li><a href="13-dbserver.html">Database Messages</a></li>
+</aside>
+
+
+  <article class="content">
+    <h1 id="style-conventions">Style Conventions</h1>
+<p>Code and documentation should conform to Astron&#39;s style guidelines.<br>This means that code should be formatted properly before being submitted in a pull request.
+Naturally, it is ideal to keep a consistent style even before making a pull request.
+Additionally, like all style guides, don&#39;t blindly follow the guide where it would make code unreadable.</p>
+<h3 id="common-conventions">Common Conventions</h3>
+<ul>
+<li>All files should use spaces instead of tabs.</li>
+<li>All files should end with a newline.</li>
+<li>Lines should not have trailing whitespace (except where part of the syntax, like in markdown).</li>
+</ul>
+<h3 id="language-specific-guides">Language Specific Guides</h3>
+<p><strong>Python</strong><br>For python use PEP-8 style guidelines.</p>
+<p><strong>C/C++</strong><br>For C and C++ code refer to the <a href="style-cxx">C++ Style Guide</a>.</p>
+<p><strong>CMake</strong><br>For CMake scripts refer to the <a href="style-cmake">CMake Style Guide</a>.</p>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

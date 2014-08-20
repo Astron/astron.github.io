@@ -220,7 +220,7 @@ footer {
   padding: 1em;
   color: #777777;
   font-size: 0.9em;
-  font-style: italic;
+  text-align: center;
 }
 #backfade-anchor {
   position: relative;
@@ -344,7 +344,7 @@ header nav a:hover {
   white-space: nowrap;
 }
 .docs article {
-  font-size: 19px;
+  font-size: 18px;
 }
 .docs article {
   z-index: 20;
@@ -369,13 +369,28 @@ header nav a:hover {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 .docs h3 {
-  font-size: 1.2em;
+  font-size: 1.3em;
 }
 .docs h4 {
   font-size: 1em;
 }
+.docs blockquote {
+  margin-left: 16px;
+  border-left: 8px solid transparent;
+  padding: 16px;
+  background-color: rgba(255, 199, 132, 0.2);
+  border-color: #ffc784;
+}
+.docs blockquote p {
+  margin: 0;
+  padding: 0;
+}
 .docs *:not(pre) > code {
-  color: #ffc784;
+  color: #aa7a40;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 0.1em;
+  margin-right: 0.1em;
 }
 .docs pre {
   overflow: auto;
@@ -387,6 +402,12 @@ header nav a:hover {
   background-color: #5f5f5f;
   border-radius: 5px;
   box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.3), 0 1px 0 rgba(255, 255, 255, 0.1), 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+.docs ul {
+  padding-left: 30px;
+}
+.docs tr {
+  font-size: 14px;
 }
 .docs aside.toc {
   z-index: 19;

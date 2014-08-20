@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; StateServer Messages</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-reference section-Internal Protocol">
+
+  <aside class="toc">
+  <h4>Contributing</h4>
+  <ul>
+    <li><a href="style-readme.html">Style Conventions</a></li>
+    <li><a href="style-cxx.html">C++ Style guide</a></li>
+  </ul>
+  <h4>Client Protocol</h4>
+  <ul>
+    <li><a href="10-client.html">Client Messages</a></li>
+  </ul>
+  <h4>Internal Protocol</h4>
+  <ul>
+    <li><a href="00-message-encoding.html">Message Format</a></li>
+    <li><a href="19-messagedirector.html">Control Messages</a></li>
+    <li><a href="11-clientagent.html">ClientAgent Messages</a></li>
+    <li><a href="12-stateserver.html">StateServer Messages</a></li>
+    <li><a href="13-dbserver.html">Database Messages</a></li>
+</aside>
+
+
+  <article class="content">
+    <h2 id="state-server-behavior">State-Server Behavior</h2>
+<p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (08-30-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>  </p>
+<h3 id="section-0-abstract">Section 0: Abstract</h3>
+<p>This document describes the messages involved in interacting with a State
+Server. A State Server is a component with a single, preconfigured channel.
+This channel is used to request the State Server to instantiate new objects.
+When an object is instantiated, the object behaves as if it were its own
+Message Director participant, and subscribes to its own channel (equal to the
+object&#39;s ID) to receive object-specific updates. Therefore, the functions of
+the State Server&#39;s control channel are very narrow compared to the wide range
+of control afforded by communicating to an instantiated object directly.</p>
+<h3 id="section-1-state-server-control-messages">Section 1: State-Server Control Messages</h3>
+<p>These messages are to be sent directly to the State Server&#39;s configured
+control channel:</p>
+<p><strong>STATESERVER_CREATE_OBJECT_WITH_REQUIRED(2000)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 dclass_id, &lt;REQUIRED&gt;)</code><br><strong>STATESERVER_CREATE_OBJECT_WITH_REQUIRED_OTHER(2001)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 dclass_id, &lt;REQUIRED&gt;, &lt;OTHER&gt;)</code>  </p>
+<blockquote>
+<p>Create an object on the State Server, specifying its initial location as
+(parent_id, zone_id), its class, and initial field data.</p>
+<p>The object then broadcasts an ENTER_LOCATION message to its location channel,
+and sends a CHANGING_ZONE with old location (0,0) to its parent (if it has one).</p>
+<p>Additionally, the object sends a GET_LOCATION to its children over the parent
+messages channel (1 &lt;&lt; 32|parent_id) with context 1001 (STATESERVER_CONTEXT_WAKE_CHILDREN).</p>
+</blockquote>
+<p><strong>STATESERVER_DELETE_AI_OBJECTS(2009)</strong> <code>args(uint64 ai_channel)</code>  </p>
+<blockquote>
+<p>Used by an AI Server to inform the State Server that it is going down. The
+State Server will then delete all objects matching the ai_channel.</p>
+<p>The AI will typically hang this on its connected MD using ADD_POST_REMOVE, so
+that the message goes out automatically if the AI loses connection unexpectedly.</p>
+</blockquote>
+<h3 id="section-2-distributed-object-control-messages">Section 2: Distributed Object Control Messages</h3>
+<p>These messages are to be sent to the objects themselves. Objects subscribe to
+a channel with their own object ID, and therefore can be reached directly by
+using their ID as the channel.</p>
+<h4 id="section-2-1-single-object-accessors">Section 2.1: Single Object Accessors</h4>
+<p>These messages provide read and write access to an objects fields. Each accessor
+message requires a DistributedObject Id; this means messages can only be sent
+to one object at a time.</p>
+<p><strong>STATESERVER_OBJECT_GET_FIELD(2010)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id)</code><br><strong>STATESERVER_OBJECT_GET_FIELD_RESP(2011)</strong><br>    <code>args(uint32 context, bool success, [uint16 field_id, &lt;VALUE&gt;])</code>  </p>
+<blockquote>
+<p>Get the value of a field from a single object.</p>
+<p>If the field is unset or invalid, the message returns a failure.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_GET_FIELDS(2012)</strong><br>    <code>args(uint32 context, uint32 do_id,
+          uint16 field_count, [uint16 field_id]*field_count)</code><br><strong>STATESERVER_OBJECT_GET_FIELDS_RESP(2013)</strong><br>    <code>args(uint32 context, uint8 success,
+          [uint16 field_count], [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
+<blockquote>
+<p>Get the value of multiple fields from a single object.</p>
+<p>A failure is only returned if one or more of the values are invalid for the
+object&#39;s distributed class.  Otherwise, a <code>field_id, &lt;VALUE&gt;</code> pair is returned
+for each present field.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_GET_ALL(2014)</strong> <code>args(uint32 context, uint32 do_id)</code><br><strong>STATESERVER_OBJECT_GET_ALL_RESP(2015)</strong><br>   <code>args(uint32 context, uint32 do_id,
+         uint32 parent_id, uint32 zone_id,
+         uint16 dclass_id, &lt;REQUIRED&gt;, &lt;OTHER&gt;)</code></p>
+<blockquote>
+<p>Get the location, class, and fields of a single object.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_SET_FIELD(2020)</strong><br>    <code>args(uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>STATESERVER_OBJECT_SET_FIELDS(2021)</strong><br>    <code>args(uint32 do_id, uint16 field_count, [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
+<blockquote>
+<p>Set one or more field(s) of a single object.</p>
+<p>The message is also used to inform others of the change by the following:</p>
+<ul>
+<li>An airecv field will be sent to the object&#39;s AI channel.</li>
+<li>An ownrecv field will be sent to the owning-client&#39;s channel.</li>
+<li>A broadcast field will be sent to the location-channel (parent_id&lt;&lt;32)|zone_id).
+The broadcast&#39;s &quot;sender&quot; is set to the original message&#39;s sender.</li>
+</ul>
+<p>In SET_FIELDS, there are multiple field updates in one message, which will be
+processed as an atomic operation. Note, in the case of field duplicates, the
+last value in the message is used.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_DELETE_FIELD_RAM(2030)</strong><br>    <code>args(uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>STATESERVER_OBJECT_DELETE_FIELDS_RAM(2031)</strong><br>    <code>args(uint32 do_id, uint16 field_count, [uint16 field_id]*field_count)</code>  </p>
+<blockquote>
+<p>Delete one or more field(s) of a single object.
+Required fields with defaults will be reset.
+Required fields without defaults cannot be deleted.</p>
+<p>The message is also used to inform others of the delete by the following:</p>
+<ul>
+<li>An airecv field will be sent to the object&#39;s AI channel.</li>
+<li>An ownrecv field will be sent to the owning-client&#39;s channel.</li>
+<li>A broadcast field will be sent to the location-channel (parent_id&lt;&lt;32)|zone_id).
+The broadcast&#39;s &quot;sender&quot; is set to the original message&#39;s sender.</li>
+</ul>
+<p>In DELETE_FIELDS, there are multiple field deletes in one message, which will
+be processed as an atomic operation.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_DELETE_RAM(2032)</strong> <code>args(uint32 do_id)</code>  </p>
+<blockquote>
+<p>Delete the object from the State Server; a stored copy on the database is not
+affected, if one exists.</p>
+<p>The message is also used to inform others of the delete.</p>
+<ul>
+<li>If it has a parent, it is broadcast to the object&#39;s location.</li>
+<li>If it has a managing AI, it is broadcast to the object&#39; AI.</li>
+<li>If it has an owner, it is broadcast to the object&#39;s owner.
+The broadcast&#39;s &quot;sender&quot; is set to the original message&#39;s sender.</li>
+</ul>
+<p>If the object has any children, it sends a STATESERVER_OBJECT_DELETE_CHILDREN
+message over the parent messages channel (1 &lt;&lt; 32|parent_id).</p>
+<p>If the object received an explicit DELETE_RAM and not an implicit delete (such
+as a DELETE_CHILDREN from a parent), it sends a STATSERVER_OBJECT_CHANGING_LOCATION
+to its parent object with INVALID_PARENT and INVALID_ZONE as the new location.</p>
+</blockquote>
+<h4 id="section-2-2-object-visibility-messages">Section 2.2: Object Visibility Messages</h4>
+<p><strong>STATESERVER_OBJECT_SET_LOCATION(2040)</strong><br>    <code>args(uint32 parent_id, uint32 zone_id)</code><br><strong>STATESERVER_OBJECT_CHANGING_LOCATION(2041)</strong><br>    <code>args(uint32 do_id, uint32 new_parent_id, uint32 new_zone_id,
+                        uint32 old_parent_id, uint32 old_zone_id)</code>  </p>
+<blockquote>
+<p>A set location message moves receiving objects to a new location.</p>
+<p>A changing location message is sent to notify others of the change:</p>
+<ul>
+<li>If an object had an old parent, it is broadcast to the object&#39;s location and the old parent.</li>
+<li>If an object a new parent, it is broadcast to the new parent.</li>
+<li>If an object has an AI, it is broadcast to the AI.</li>
+<li>If an object has an owner, it is broadcast to the owner.
+The notification&#39;s &quot;sender&quot; is set to the original message&#39;s sender.</li>
+</ul>
+<p>Then the objects will broadcast one of the following enter location messages to the new location.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_ENTER_LOCATION_WITH_REQUIRED(2042)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 dclass_id, &lt;REQUIRED_BCAST&gt;)</code><br><strong>STATESERVER_OBJECT_ENTER_LOCATION_WITH_REQUIRED_OTHER(2043)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 dclass_id, &lt;REQUIRED_BCAST&gt;, &lt;OTHER_BCAST&gt;)</code> </p>
+<blockquote>
+<p>Used by the object to tell the new location about the object&#39;s entry.</p>
+<p>The message format is identical to OBJECT_CREATE except that non-broadcast
+fields are not included in the object serialization.  Broadcast fields are the
+only public fields on an object.  Non-broadcast fields are not sent, because
+clients with interest in the object may not be privy to those fields.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_GET_LOCATION(2044)</strong> <code>args(uint32 context)</code><br><strong>STATESERVER_OBJECT_GET_LOCATION_RESP(2045):</strong><br>    <code>args(uint32 context, uint32 do_id, uint32 parent_id, uint32 zone_id)</code>  </p>
+<blockquote>
+<p>Get the location from one or more objects.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_SET_AI(2050)</strong> <code>args(uint64 ai_channel)</code><br><strong>STATESERVER_OBJECT_CHANGING_AI(2051)</strong><br>    <code>args(uint32 doid_id, uint64 new_ai_channel, uint64 old_ai_channel)</code>  </p>
+<blockquote>
+<p>A set AI message moves receiving objects to a new AI.</p>
+<p>A changing location message is sent to notify others of the change:</p>
+<ul>
+<li>If an object had an old ai, notify the object&#39;s old ai.</li>
+<li>If an object has children, notify the children using the parent channel (1 &lt;&lt; 32|parent_id).
+The notification&#39;s &quot;sender&quot; is set to the original message&#39;s sender.</li>
+</ul>
+<p>Children whose AI channels have not been explicitly set will process the message
+as if they had received a set AI message with ai_channel equal to the new AI;
+their AI channel is implicitly set to that of their parent.</p>
+<p>Then the objects will send one of the following enter AI messages to the new AI.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_ENTER_AI_WITH_REQUIRED(2052)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 class_id, &lt;REQUIRED&gt;)</code><br><strong>STATESERVER_OBJECT_ENTER_AI_WITH_REQUIRED_OTHER(2053)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 class_id, &lt;REQUIRED&gt;, &lt;OTHER&gt;)</code>  </p>
+<blockquote>
+<p>Used by the object to tell the new AI about the objects&#39; entry.</p>
+<p>The message format is identical to OBJECT_CREATE.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_GET_AI(2054)</strong> <code>args(uint32 context)</code><br><strong>STATESERVER_OBJECT_GET_AI_RESP(2055):</strong><br>    <code>args(uint32 context, uint32 do_id, uint64 ai_channel)</code>  </p>
+<blockquote>
+<p>Get the AI from one or more objects.</p>
+<p>This message is sent automatically by an object that has just changed parents
+to check if the new parent has a different AI channel. If the object&#39;s AI
+channel has not been explicitly set, it will act as if it had received a set
+AI message; sending out its own changing and entering AI messages.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_SET_OWNER(2060)</strong> <code>args(uint64 owner_channel)</code>
+<strong>STATESERVER_OBJECT_CHANGING_OWNER(2061)</strong><br>    <code>args(uint32 do_id, uint64 new_owner_channel, uint64 old_owner_channel)</code>  </p>
+<blockquote>
+<p>A set owner message moves receiving object to a new owner.</p>
+<p>A changing owner message is sent to notify others of the change:</p>
+<ul>
+<li>If an object had an old owner, notify the object&#39;s old owner.
+The notification&#39;s &quot;sender&quot; is set to the original message&#39;s sender.</li>
+</ul>
+<p>Then the objects will send one of the following enter owner messages to the
+new owner.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_ENTER_OWNER_WITH_REQUIRED(2062):</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 dclass_id, &lt;REQUIRED_BCAST_OR_OWNRECV&gt;)</code><br><strong>STATESERVER_OBJECT_ENTER_OWNER_WITH_REQUIRED_OTHER(2063):</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id,
+          uint16 dclass_id, &lt;REQUIRED_BCAST_OR_OWNRECV&gt;, &lt;OTHER_BCAST_OR_OWNRECV&gt;)</code>  </p>
+<blockquote>
+<p>Used by the object to tell the new owner about the object&#39;s entry.</p>
+<p>The message format is identical to OBJECT_CREATE except that only fields with
+the broadcast or ownrecv keyword are included in the object serialization.
+Other fields are not sent, because the owner may not be privy to those fields.</p>
+</blockquote>
+<h4 id="section-2-3-parent-object-methods">Section 2.3: Parent Object Methods</h4>
+<p>These messages are sent to a single parent object to interact with its children.</p>
+<p><strong>STATESERVER_OBJECT_GET_ZONE_OBJECTS(2100)</strong><br>    <code>args(uint32 context, uint32 parent_id, uint32 zone_id)</code><br><strong>STATESERVER_OBJECT_GET_ZONES_OBJECTS(2102)</strong><br>    <code>args(uint32 context, uint32 parent_id, uint16 zone_count, [uint32 zone_id]*zone_count)</code><br><strong>STATESERVER_OBJECT_GET_CHILDREN(2104)</strong><br>    <code>args(uint32 context, uint32 parent_id)</code>  </p>
+<blockquote>
+<p>Get all child objects in one or more zones from a single object.</p>
+<p>The parent will reply immediately with a GET_{ZONE,ZONES,CHILD}_COUNT_RESP
+message. Each object will reply with a STATESERVER_OBJECT_ENTER_LOCATION message.</p>
+<p><em>Note: If a shard crashes the number of objects may not be correct, as such
+       a client (for ADD_INTEREST) or AI/Uberdog (in the general case) should
+       stop waiting after a reasonable timeout.  In some cases, it may be
+       acceptable or even preferred to not wait for all responses to come in
+       and just act on objects as they come in.</em></p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_GET_ZONE_COUNT(2110)</strong><br>    <code>args(uint32 context, uint32 parent_id, uint32 zone_id)</code><br><strong>STATESERVER_OBJECT_GET_ZONE_COUNT_RESP(2111)</strong><br>    <code>args(uint32 context, uint32 object_count)</code> // when using uint64 ids, <code>object_count</code> is uint64.<br><strong>STATESERVER_OBJECT_GET_ZONES_COUNT(2112)</strong><br>    <code>args(uint32 context, uint32 parent_id, uint16 zone_count, [uint32 zone_id]*zone_count)</code><br><strong>STATESERVER_OBJECT_GET_ZONES_COUNT_RESP(2113)</strong><br>    <code>args(uint32 context, uint32 object_count)</code> // when using uint64 ids, <code>object_count</code> is uint64.<br><strong>STATESERVER_OBJECT_GET_CHILD_COUNT(2114)</strong><br>    <code>args(uint32 context, uint32 parent_id)</code><br><strong>STATESERVER_OBJECT_GET_CHILD_COUNT_RESP(2115)</strong><br>    <code>args(uint32 context, uint32 object_count)</code> // when using uint64 ids, <code>object_count</code> is uint64.  </p>
+<blockquote>
+<p>Get the number of children objects in one or more of a single object&#39;s zones.</p>
+</blockquote>
+<p><strong>STATESERVER_OBJECT_DELETE_ZONE(2120)</strong><br>    <code>args(uint32 parent_id, uint32 zone_id)</code><br><strong>STATESERVER_OBJECT_DELETE_ZONES(2122)</strong><br>    <code>args(uint32 parent_id, uint16 zone_count, [uint32 zone_id]*zone_count)</code><br><strong>STATESERVER_OBJECT_DELETE_CHILDREN(2124)</strong><br>    <code>args(uint32 parent_id)</code>  </p>
+<blockquote>
+<p>Delete all objects in one or more zones by forwarding this message to the
+parent&#39;s children over the parent messages channel (1 &lt;&lt; 32|parent_id).</p>
+<p>Children behave as if they had received a DELETE<em>RAM.
+Children who receive a DELETE</em>{ZONE,ZONES,CHILDREN} should not send a
+CHANGING_LOCATION message back to the parent.</p>
+</blockquote>
+<h4 id="section-2-4-database-state-objects">Section 2.4: Database-State Objects</h4>
+<p>The database-state server is a special subclass of the stateserver. Unlike a
+normal state server, the DBSS does not listen on a control channel and so cannot
+receive GENERATE messages. Objects must first be generated by the
+DBSERVER_OBJECT_CREATE message in a database before they can be interacted with
+the database stateserver.</p>
+<p>The database stateserver otherwise provides equivelant StateServer-like behavior
+to stored objects in the database.</p>
+<p><strong>DBSS_OBJECT_ACTIVATE_WITH_DEFAULTS(2200)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id)</code><br><strong>DBSS_OBJECT_ACTIVATE_WITH_DEFAULTS_OTHER(2201)</strong><br>    <code>args(uint32 do_id, uint32 parent_id, uint32 zone_id, uint16 dclass_id,
+          uint16 field_count, uint&lt;OTHER_UPDATES&gt;)</code>  </p>
+<blockquote>
+<p>Load an object into ram from disk with the given parent and zone.
+The loaded object will use fields from the database if they exist, and will use
+the defaults provided by the dc file for required values if the value is not
+available in the database.</p>
+<p><em>Note: If no default was provided, the dcparser sets that default to the null-
+       value for that data-type; typically 0.</em></p>
+<p>Once in ram, the DBSS will cache all ram and required fields.
+When the fields are updated on the DBSS, they will be written back to the database.
+An activated object will also listen for broadcasted Database updates and change
+any cached values.</p>
+<p>These message will broadcast ENTER_LOCATION and CHANGING_ZONE messages as if the
+object had just been generated with STATESERVER_CREATE_OBJECT.</p>
+<p>In the case of <code>_OTHER</code>, fields can be manually provided that override values
+from the databases and/or defaults from the DC file.<br>If the wrong dclass_id is sent, the DBSS will ignore the message.</p>
+</blockquote>
+<p><strong>DBSS_OBJECT_GET_ACTIVATED(2207)</strong> <code>args(uint32 context, uint32 do_id)</code><br><strong>DBSS_OBJECT_GET_ACTIVATED_RESP(2208):</strong><br>    <code>args(uint32 context, uint32 do_id, bool is_activated)</code>  </p>
+<blockquote>
+<p>Tests whether a particular object id has been activated on the DBSS.<br>For a doid which doesn&#39;t exist, the message always returns false.</p>
+</blockquote>
+<p><strong>DBSS_OBJECT_DELETE_FIELD_DISK(2230)</strong><br>    <code>args(uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>DBSS_OBJECT_DELETE_FIELDS_DISK(2231)</strong><br>    <code>args(uint32 do_id, uint16 field_count, [uint16 field_id]*field_count)</code>  </p>
+<blockquote>
+<p>Delete one or more db field(s) of a single object.</p>
+<p>The message is also used to inform others of the delete by the following:</p>
+<ul>
+<li>An airecv field will be sent to the object&#39;s AI channel.</li>
+<li>An ownrecv field will be sent to the owning-client&#39;s channel.</li>
+<li>A broadcast field will be sent to the location-channel (parent_id&lt;&lt;32)|zone_id).
+The delete-notifications&#39;s sender is equal to the original message&#39;s sender.</li>
+</ul>
+<p>In DELETE_FIELDS, there are multiple field deletes in one message, which will
+be processed as an atomic operation.</p>
+</blockquote>
+<p><strong>DBSS_OBJECT_DELETE_DISK(2232)</strong><br>    <code>args(uint32 do_id)</code>  </p>
+<blockquote>
+<p>Delete the object from the Database. The object still exists in ram, if it
+was previously activated.</p>
+<p>The message is also used to inform others of the delete.  It is broadcast to
+the objects location, managing AI, and owner if they exists.</p>
+<p><em>Note: Currently this message does not propogate to children. This behavior
+       should be reviewed to determine whether it is expected or not.</em></p>
+</blockquote>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

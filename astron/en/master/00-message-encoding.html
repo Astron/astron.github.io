@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; Message Format</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-reference section-Internal Protocol">
+
+  <aside class="toc">
+  <h4>Contributing</h4>
+  <ul>
+    <li><a href="style-readme.html">Style Conventions</a></li>
+    <li><a href="style-cxx.html">C++ Style guide</a></li>
+  </ul>
+  <h4>Client Protocol</h4>
+  <ul>
+    <li><a href="10-client.html">Client Messages</a></li>
+  </ul>
+  <h4>Internal Protocol</h4>
+  <ul>
+    <li><a href="00-message-encoding.html">Message Format</a></li>
+    <li><a href="19-messagedirector.html">Control Messages</a></li>
+    <li><a href="11-clientagent.html">ClientAgent Messages</a></li>
+    <li><a href="12-stateserver.html">StateServer Messages</a></li>
+    <li><a href="13-dbserver.html">Database Messages</a></li>
+</aside>
+
+
+  <article class="content">
+    <h2 id="wire-format-of-messages-data-encoding">Wire Format of Messages &amp; Data Encoding</h2>
+<p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (08-30-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>   </p>
+<h3 id="section-0-anatomy-of-a-message">Section 0: Anatomy of a Message</h3>
+<p>Astron Message Directors are linked via TCP streams. The linking forms a
+tree; that is, no routing loops may exist in a Message Director network. If a
+routing loop exists, the traffic will be amplified into a broadcast storm.</p>
+<p>When any TCP connection is established, there is an initiator (or connector)
+and a receiver (or listener). This distinction is important in the Astron
+Message Director hierarchy: One Message Director should be configured as a
+root node, which makes no connections to any other nodes. Instead, the root
+node listens for connections from other Message Directors, which may either
+host other components of the Astron cluster, or they may themselves listen
+for connections from other MDs.</p>
+<p>Once the TCP connection is open, there is no handshaking process required. The
+connecting MD may simply begin sending messages. The format of a typical
+message is described below:</p>
+<pre><code>uint16 length;
+uint8 recipient_count;
+uint64 recipients[recipient_count];
+uint64 sender;
+uint16 msgtype;
+...the message may have a payload following msgtype...
+</code></pre><p>All multi-byte types are to be sent in little-endian order. The &quot;length&quot; tag
+represents the length of the message, in bytes, NOT counting itself.
+Therefore, consider this example message:</p>
+<pre><code>1a 00                   // Length: count of the following bytes
+01                      // One recipient channel
+d2 04 00 00 00 00 00 00 // Recipient channel ID = 1234
+e1 10 00 00 00 00 00 00 // Sender channel ID = 4321
+39 05                   // Message type code 1337.
+05 00 48 45 4c 4c 4f    // Payload for the message; in this example, the string
+                           &quot;HELLO&quot; -- strings are prefixed with a length field of
+                           their own, hence the 05 00
+</code></pre><h4 id="section-1-distributedobject-serialization">Section 1: DistributedObject Serialization</h4>
+<p>Some messages contained serialized data in their payload.<br>Serialization as used in messages means sending individual
+variables as raw little-endian byte data, with one value
+immediately following the previous value. String and blob type
+values are always prefixed with a uint16 length, which is
+followed by the raw string/binary data.</p>
+<p>The standard format for sending the full encoding of a
+DistributedObject is to send, in low to high order of field_id,
+the serialized data of all of the required fields of the object.
+The required is followed by a uint16 which specifices how many
+optional fields exist. If any optional fields exist, this is
+followed by <uint16 field_id, [DATA]> pairs for each optional
+field. It is RECOMMENDED that they be in low to high order of
+field_id.  Astron will always broadcast fields in that order.</p>
+<p>Example DC Class:</p>
+<pre><code>dclass DistributedAvatar
+    name(string n) required db;  // ID = 0 | Value = &quot;Throgdar&quot;
+    x(uint64 x) broadcast ram;   // ID = 1 | Value = 5
+    y(uint64 y) broadcast ram;   // ID = 2 | No Value
+    z(uint64 z) broadcast ram;   // ID = 3 | Value = 0
+</code></pre><p>Serialized form:</p>
+<pre><code>08 00 // Length of &quot;Throgdar&quot;
+54 68 72 6f 67 64 61 72 // Character data
+02 00 // Count of optional fields
+01 00 // field_id for &#39;x&#39; (ID = 1)
+05 00 00 00 00 00 00 00 // Value = 5
+03 00 // field_id for &#39;z&#39; (ID = 3)
+00 00 00 00 00 00 00 00 // Value = 0
+</code></pre><h3 id="section-2-argument-types">Section 2: Argument Types</h3>
+<p>The following are the types used as message arguments:</p>
+<ul>
+<li><strong>bool</strong> - A single byte integer containg either 0 (False) or 1 (True).</li>
+<li><strong>blob</strong> - A length-prefixed array of raw-byte data.</li>
+<li><strong>string</strong> - A length-prefixed array of character data (no null-terminator).</li>
+<li><strong>uintN</strong> - An N-bit little-endian encoded integer value.</li>
+</ul>
+<h3 id="section-3-special-argument-shorthand">Section 3: Special Argument Shorthand</h3>
+<pre><code>VALUE        // VALUE is the serialization of a DistributedObject field
+
+REQUIRED -&gt;  // REQUIRED is a group of
+
+    &lt;VALUE&gt; * required_count  // All of the fields with the &#39;required&#39; keyword
+                              // in ascending order by field_id.
+
+OTHER -&gt;    // OTHER is group of
+
+    (field_id, &lt;VALUE&gt;)       // Field values paired with their ids, but only any remaining
+                              // optional fields that may be provided by the caller.
+</code></pre><h3 id="section-4-message-type-ranges">Section 4: Message-type Ranges</h3>
+<p>Each component of the Astron daemon is given its own message-type range:</p>
+<ul>
+<li><strong>Client:</strong>              1 to  999</li>
+<li><strong>Client Agent:</strong>     1000 to 1999</li>
+<li><strong>State Server:</strong>     2000 to 2999</li>
+<li><strong>Database Server:</strong>  3000 to 3999</li>
+<li><strong>Reserved:</strong>         4000 to 8999</li>
+<li><strong>Message Director:</strong> 9000 to 9999</li>
+</ul>
+<h3 id="section-5-reserved-channels-object-ids">Section 5: Reserved Channels | Object IDs</h3>
+<ul>
+<li><strong>Invalid Channel:</strong>         0</li>
+<li><strong>Control Messages:</strong>        1</li>
+<li><strong>All Clients:</strong>            10</li>
+<li><strong>All State Servers:</strong>      12</li>
+<li><strong>All Database Servers:</strong>   13</li>
+<li><strong>Reserved Channels:</strong>    &lt;999</li>
+</ul>
+<h3 id="section-6-reserved-ranges">Section 6: Reserved Ranges</h3>
+<ul>
+<li><strong>Parent Messages:</strong>     1 &lt;&lt; 32</li>
+<li><strong>Reserved Ranges:</strong>  &lt;999 &lt;&lt; 32</li>
+</ul>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

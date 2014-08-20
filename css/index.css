@@ -246,7 +246,7 @@ footer {
   padding: 1em;
   color: #777777;
   font-size: 0.9em;
-  font-style: italic;
+  text-align: center;
 }
 #backfade-anchor {
   position: relative;

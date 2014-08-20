@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; Database Messages</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-reference section-Internal Protocol">
+
+  <aside class="toc">
+  <h4>Contributing</h4>
+  <ul>
+    <li><a href="style-readme.html">Style Conventions</a></li>
+    <li><a href="style-cxx.html">C++ Style guide</a></li>
+  </ul>
+  <h4>Client Protocol</h4>
+  <ul>
+    <li><a href="10-client.html">Client Messages</a></li>
+  </ul>
+  <h4>Internal Protocol</h4>
+  <ul>
+    <li><a href="00-message-encoding.html">Message Format</a></li>
+    <li><a href="19-messagedirector.html">Control Messages</a></li>
+    <li><a href="11-clientagent.html">ClientAgent Messages</a></li>
+    <li><a href="12-stateserver.html">StateServer Messages</a></li>
+    <li><a href="13-dbserver.html">Database Messages</a></li>
+</aside>
+
+
+  <article class="content">
+    <h2 id="database-server-behavior">Database-Server Behavior</h2>
+<p><strong>Authors</strong><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>  </p>
+<h3 id="section-0-abstract">Section 0: Abstract</h3>
+<p>This section documents the messages involved in interacting with a Database
+Server. A Database Server is a component with a single, preconfigured channel.
+This channel is used to request the Database Server to:</p>
+<ul>
+<li>Create new objects stored in the database.</li>
+<li>Update object fields stored in database.</li>
+<li>Run queries on objects stored in the database.</li>
+</ul>
+<p>When one or more of a database object&#39;s values is updated through a set- or delete-
+operation, the database will broadcast the received message over the database messages
+channel (2 &lt;&lt; 32|do_id).  This behavior is default, but can be disabled through the daemon config.</p>
+<h3 id="section-1-database-server-messages">Section 1: Database Server Messages</h3>
+<p>The following is a list of database control messages:</p>
+<p><strong>DBSERVER_CREATE_OBJECT(3000)</strong><br>    <code>args(uint32 context, uint16 dclass_id, uint16 field_count,
+         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code><br><strong>DBSERVER_CREATE_OBJECT_RESP(3001)</strong><br>    <code>args(uint32 context, uint32 do_id)</code>  </p>
+<blockquote>
+<p>This message creates a new object in the database with the given fields set to
+the given values.  If a field was not given, but has a default value, the default
+value is stored.</p>
+<p>If creation fails INVALID_DO_ID (0) is returned.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_GET_FIELD(3010)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id)</code><br><strong>DBSERVER_OBJECT_GET_FIELD_RESP(3011)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;])</code>  </p>
+<blockquote>
+<p>This message gets the value of a single field from an object in the database.
+If the field is not set, the response returns a failure.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_GET_FIELDS(3012)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_count,
+         [uint16 field_id]*field_count</code><br><strong>DBSERVER_OBJECT_GET_FIELDS_RESP(3013)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_count],
+         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
+<blockquote>
+<p>This message gets the values of multiple fields from an object in the database.
+Database fields with no stored value are not included in the list of returned fields.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_GET_ALL(3014)</strong><br>    <code>args(uint32 context, uint32 do_id)</code><br><strong>DBSERVER_OBJECT_GET_ALL_RESP(3015)</strong><br>    <code>args(uint32 context, uint8 success,
+         [uint16 dclass_id, uint16 field_count],
+         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
+<blockquote>
+<p>This message queries all of the data stored in the database about an object.
+Database fields with no stored value are not included in the list of returned fields.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_SET_FIELD(3020)</strong><br>    <code>args(uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>DBSERVER_OBJECT_SET_FIELDS(3021)</strong><br>    <code>args(uint32 do_id, uint16 field_count, [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
+<blockquote>
+<p>These messages replace an object&#39;s current stored values for given fields.
+For updates that are derived or dependent on previous values, consider
+using SET_FIELD(S)_IF_EQUALS message instead.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EQUALS(3022)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id, &lt;VALUE&gt; old, &lt;VALUE&gt; new)</code><br><strong>DBSERVER_OBJECT_SET_FIELD_IF_EQUALS_RESP(3023)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;])</code><br><strong>DBSERVER_OBJECT_SET_FIELDS_IF_EQUALS(3024)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_count,
+         [uint16 field_id, VALUE old, VALUE new]*field_count)</code><br><strong>DBSERVER_OBJECT_SET_FIELDS_IF_EQUALS_RESP(3025)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_count],
+         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
+<blockquote>
+<p>These message replaces the current values of the given object with new values,
+but only if the &#39;old&#39; values match the current state of the database.</p>
+<p>This method of updating the database is used to prevent race conditions,
+particularily when the new values are derived or dependent on the old values.</p>
+<p>If any of the given <em>old</em> values don&#39;t match then the entire transaction fails.
+In this case, the current values of all non-empty fields will be returned after FAILURE.</p>
+<p>If any of the given fields are non-database or invalid, the entire transaction
+fails and no values are returned.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EMPTY(3026)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>DBSERVER_OBJECT_SET_FIELD_IF_EMPTY_RESP(3027)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;])</code>  </p>
+<blockquote>
+<p>This message sets the given field if it does not currently have a value.<br>If the field is non-empty, the current value will be returned after FAILURE.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_DELETE_FIELD(3030)</strong><br>   <code>args(uint32 do_id, uint16 field_id)</code><br><strong>DBSERVER_OBJECT_DELETE_FIELDS(3031)</strong><br>   <code>args(uint32 do_id, uint16 field_count, [uint16 field_id]*field_count)</code>  </p>
+<blockquote>
+<p>These messages delete individual fields from a database object.</p>
+<p>Fields with default values will be reset to the default instead.</p>
+</blockquote>
+<p><strong>DBSERVER_OBJECT_DELETE(3032)</strong><br>    <code>args(uint32 do_id)</code>  </p>
+<blockquote>
+<p>This message removes the object with the given do_id from the server.  </p>
+</blockquote>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+

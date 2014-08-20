@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="Elizabeth Reedy, Kevin Stenerson">
+
+  <title>Astron &mdash; Control Messages</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' />
+  <link rel="stylesheet" href="/css/astron.css" />
+
+  <!-- Javascript -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript" src="/js/components.js"></script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a id="banner" href="/astron/index.html">
+        <img src="/images/astron-461px.png" alt="Astron">
+      </a>
+
+      <nav>
+  <a href="/astron/index.html">Home</a>
+  <a href="/astron/en/master/guide.html">Guide</a>
+  <a href="/astron/en/master/style-readme.html">Reference</a>
+  <a href="https://github.com/Astron/Astron"><i class="fa fa-github"></i></a>
+</nav>
+
+
+    </div>
+  </header>
+
+
+<hr class="top" />
+
+<div class="container docs group-reference section-Internal Protocol">
+
+  <aside class="toc">
+  <h4>Contributing</h4>
+  <ul>
+    <li><a href="style-readme.html">Style Conventions</a></li>
+    <li><a href="style-cxx.html">C++ Style guide</a></li>
+  </ul>
+  <h4>Client Protocol</h4>
+  <ul>
+    <li><a href="10-client.html">Client Messages</a></li>
+  </ul>
+  <h4>Internal Protocol</h4>
+  <ul>
+    <li><a href="00-message-encoding.html">Message Format</a></li>
+    <li><a href="19-messagedirector.html">Control Messages</a></li>
+    <li><a href="11-clientagent.html">ClientAgent Messages</a></li>
+    <li><a href="12-stateserver.html">StateServer Messages</a></li>
+    <li><a href="13-dbserver.html">Database Messages</a></li>
+</aside>
+
+
+  <article class="content">
+    <h2 id="controlling-the-message-director">Controlling the Message Director</h2>
+<p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (08-30-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>  </p>
+<h3 id="section-0-control-messages">Section 0: Control Messages</h3>
+<p>As Message Directors operate on a publish-subscribe model, a message will only
+be sent downlink (i.e. from a listener to a connector) if the connector
+specifically requested to be informed of messages on one of the message&#39;s
+channels. Uplink messages, however, are sent unsolicited.</p>
+<p>To request messages on a channel, the upstream Message Director must receive a
+control message from a downstream \MD requesting to be added to a channel.</p>
+<p>Control messages are distinguished by two things:</p>
+<ol>
+<li>Control messages must be sent only to channel 1, and no other channels.</li>
+<li>Control messages OMIT the sender field; this is because the sender is
+assumed (known) to be the MD on the other end of the link.</li>
+</ol>
+<p>The following control messages exist, with their respective formats:</p>
+<p><strong>CONTROL_ADD_CHANNEL(9000)</strong> <code>args(uint64 channel)</code><br><strong>CONTROL_REMOVE_CHANNEL(9001)</strong> <code>args(uint64 channel)</code>  </p>
+<blockquote>
+<p>These messages allow a downstream Message Director to (un)subscribe a channel.
+The argument is the channel to be added or removed from the subscriptions.</p>
+</blockquote>
+<p><strong>CONTROL_ADD_RANGE(9002)</strong><br><code>args(uint64 low_channel, uint64 high_channel)</code><br><strong>CONTROL_REMOVE_RANGE(9003)</strong><br><code>args(uint64 low_channel, uint64 high_channel)</code>  </p>
+<blockquote>
+<p>These messages add/remove an entire range of channels at once. The first
+argument(s) should be the lower channel to add. The second argument(s) is the
+upper channel of the range. The ranges are inclusive.</p>
+</blockquote>
+<p><strong>CONTROL_ADD_POST_REMOVE(9010)</strong> <code>args(uint64 sender, blob datagram)</code><br><strong>CONTROL_CLEAR_POST_REMOVES(9011)</strong> <code>args(uint64 sender)</code>  </p>
+<blockquote>
+<p>Often, Message Directors may be unexpectedly disconnected from one another, or
+a Message Director may crash while under normal operation without the chance
+to clean up. These control messages allow a downstream MD to schedule messages
+on the upstream MD to be sent in the event of an unexpected disconnect.</p>
+<p>The sender is the channel (typically representing the participant who sends the message)
+that the post removes should be tied to.  This field is only used to be able to clear a
+bundle of post removes for a particular sender.  Unlike other messages, post removes
+MUST NOT be sent by Roles or AIs with a feigned sender -- the post remove is only sent
+when the participant that sent it disconnects.</p>
+<p>The second argument to CONTROL_ADD_POST_REMOVE is a blob; the blob contains a
+message, minus the length tag (since the blob already includes a length tag
+of its own, this would be redundant information).
+CONTROL_CLEAR_POST_REMOVE is used to reset all of the on-disconnect messages.
+This may be used prior to a MD&#39;s clean shutdown, if it doesn&#39;t wish the
+unexpected-disconnect messages to be processed.</p>
+</blockquote>
+<p><strong>CONTROL_SET_CON_NAME(9012)</strong> <code>args(string name)</code><br><strong>CONTROL_SET_CON_URL(9013)</strong> <code>args(string url)</code>  </p>
+<blockquote>
+<p>As every Astron daemon may include a webserver with debug information, it is
+often helpful to understand the purpose of incoming MD connections. A
+downstream MD may be configured with a specific name, and it may wish to
+inform the upstream MD what its name and webserver URL are. These control
+messages allow the downstream MD to communicate this information.</p>
+</blockquote>
+<p><strong>CONTROL_LOG_MESSAGE(9014)</strong> <code>args(blob message)</code></p>
+<blockquote>
+<p>In production layouts, it may be useful for AIs to log messages
+to the eventlogger infrastructure (preferably a fluentd instance) without
+needing to have redundant configuration on the AI servers, which could come
+out of sync. Using this message, the MD will simply route the message argument
+to the configured eventlogger.</p>
+</blockquote>
+
+  </article>
+
+</div>
+
+<div id="backfade-anchor">
+  <div class="backfade"></div>
+</div>
+
+  <footer>
+    <div id="copyright" class="container">
+     <p>The contents of this website are &copy;&nbsp;2014, the Astron project.<br />
+        They are available under the terms of the
+        <a href="/license.html">Astron Documentation License</a>.
+     </p>
+     <p>
+    </div>
+  </footer>
+</body>
+</html>
+
