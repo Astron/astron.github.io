@@ -65,7 +65,7 @@
     <h1 id="client-protocol">Client Protocol</h1>
 <p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (09-17-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (10-08-2013)</em>  </p>
 <h2 id="section-0-abstract">Section 0: Abstract</h2>
-<p>This page describes the protocol used by clients to communicate with an Astron
+<p>This document describes the protocol used by clients to communicate with an Astron
 cluster. This should not be confused with the <em>internal protocol</em>, which is used
 by Astron servers to communicate amongst themselves. Instead, the client
 protocol is used by game clients (running on the players&#39; computers) to communicate
@@ -148,7 +148,7 @@ it will assume that the client has crashed and disconnect the client.</p>
 <pre><code>uint32 do_id, uint32 parent_id, uint32 zone_id, uint16 dclass_id, &lt;REQUIRED&gt;, &lt;OTHER&gt; 
 </code></pre><blockquote>
 <p>Inform the client of an object entering one of the client&#39;s interests.</p>
-<p><strong>Note:</strong> This is analogous to the <a href="12-stateserver#object-visibility-messages">StateServer</a>
+<p><strong>Note:</strong> This is analogous to the <a href="12-stateserver#section-2-2-object-visibility-messages">StateServer</a>
           <code>OBJECT_ENTER_LOCATION</code> messages.</p>
 </blockquote>
 <p><strong>CLIENT_ENTER_OBJECT_REQUIRED_OWNER (172)</strong></p>

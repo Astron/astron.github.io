@@ -62,18 +62,17 @@
 
 
   <article class="content">
-    <h2 id="client-agent-behavior">Client Agent Behavior</h2>
+    <h1 id="client-agent-behavior">Client Agent Behavior</h1>
 <p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (09-17-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (10-08-2013)</em>  </p>
-<h3 id="section-0-abstract">Section 0: Abstract</h3>
+<h2 id="section-0-abstract">Section 0: Abstract</h2>
 <p>The Client Agent is responsible for allowing clients into the network. Clients
 <strong>do not</strong> connect directly to the Message Director: this would be a serious
 security risk, as clients could then send any message they want in order to
 disrupt the running game. Instead, the clients connect to the Client Agent, which
 acts as a gateway into the running network.</p>
 <p>The client protocol is not the same as the internal inter-MD protocol documented
-here. For information on how clients communicate with the server, see the
-<code>10-client.md</code> file in this directory.</p>
-<h3 id="section-1-responsibilities">Section 1: Responsibilities</h3>
+here. For information on how clients communicate with the server, see the <a href="10-client">Client Protocol</a>.</p>
+<h2 id="section-1-responsibilities">Section 1: Responsibilities</h2>
 <p>The Client Agent is responsible for all security in the game environment.
 Its responsibilities include ensuring clients only send clsend/ownsend messages,
 ensuring clients do not send corrupt field updates, verifying client version
@@ -82,33 +81,35 @@ upon connection, and so on.</p>
 from the running cluster on the client&#39;s behalf. If a client sends a message
 to open interest in a particular zone, the Client Agent will query all objects
 residing in that zone.</p>
-<h3 id="section-2-ca-state-machine">Section 2: CA State Machine</h3>
+<h2 id="section-2-ca-state-machine">Section 2: CA State Machine</h2>
 <p>Every connected client resides in one of three states:</p>
 <ul>
-<li><strong>NEW(0)</strong>: The client has just connected. The CA has no idea what version the
+<li><strong>NEW (0)</strong>: The client has just connected. The CA has no idea what version the
 client is running, or even if the client is a game client. In this state, the
 client <strong>must</strong> send a CLIENT_HELLO as its first message. Any other data will
 result in a disconnect.</li>
-<li><strong>ANONYMOUS(1)</strong>: The client has just sent a HELLO, but has not provided suitable
+<li><strong>ANONYMOUS (1)</strong>: The client has just sent a HELLO, but has not provided suitable
 authentication yet. In this state, the client may communicate with predesignated
 UberDOGs to provide authentication credentials and/or make anonymous game-state
 queries. Upon providing suitable authentication, the UberDOG(s) will instruct the
 CA, using an internal message, to move the client to the next state.</li>
-<li><strong>ESTABLISHED(2)</strong>: The client is fully connected and may behave normally. It is
+<li><strong>ESTABLISHED (2)</strong>: The client is fully connected and may behave normally. It is
 no longer restricted to the &quot;anonymous&quot; subset of UberDOGs.</li>
 </ul>
-<h3 id="section-3-session-messages">Section 3: Session Messages</h3>
+<h2 id="section-3-session-messages">Section 3: Session Messages</h2>
 <p>Unlike the State Server, the Client Agent does not have a control channel of its
 own. Therefore, all of these messages are meant to be sent to an active client
 session channel.</p>
-<p><strong>CLIENTAGENT_SET_STATE(1000)</strong> <code>args(uint16 ca_state)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_SET_STATE (1000)</strong></p>
+<pre><code>uint16 ca_state
+</code></pre><blockquote>
 <p>Move the CA&#39;s state machine to a given state. This is mainly used when a client
 logs in or logs out, to flip the client between the ANONYMOUS and ESTABLISHED
 states respectively.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_SET_CLIENT_ID(1001)</strong> <code>args(uint64 channel)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_SET_CLIENT_ID (1001)</strong></p>
+<pre><code>uint64 channel
+</code></pre><blockquote>
 <p>Changes the sender used to represent this client.</p>
 <p>This is useful if application/game components need to identify the avatar/account
 a given message came from: by changing the sender channel to include this
@@ -117,23 +118,26 @@ sends a field update.</p>
 <p><em>Note: This also results in the CA opening the new channel, if it isn&#39;t open
        already.</em></p>
 </blockquote>
-<p><strong>CLIENTAGENT_SEND_DATAGRAM(1002)</strong> <code>args(blob datagram)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_SEND_DATAGRAM (1002)</strong></p>
+<pre><code>blob datagram
+</code></pre><blockquote>
 <p>Send a raw datagram down the pipe to the client. This is useful for sending
 app/game-specific messages to the client, debugging, etc.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_EJECT(1004)</strong><br>    <code>args(uint16 disconnect_code, string reason)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_EJECT (1004)</strong></p>
+<pre><code>uint16 disconnect_code, string reason
+</code></pre><blockquote>
 <p>Disconnects the client with the specified code and reason. The code and reason
 carry the same meaning as CLIENT_EJECT.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_DROP(1005)</strong> <code>args()</code>  </p>
+<p><strong>CLIENTAGENT_DROP (1005)</strong> <code>No arguments</code>  </p>
 <blockquote>
 <p>Similar to above, but causes the CA to silently close the client connection,
 providing no explanation whatsoever to the client.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_DECLARE_OBJECT(1010)</strong><br>    <code>args(uint32 do_id, uint16 dclass_id)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_DECLARE_OBJECT (1010)</strong></p>
+<pre><code>uint32 do_id, uint16 dclass_id
+</code></pre><blockquote>
 <p>Because Client Agents verify the integrity of field updates, they must know the
 dclass of a given object to ensure that the incoming field update is for a field
 that the dclass/object actually has. Therefore, clients are normally unable to
@@ -142,73 +146,84 @@ currently visible to the client. This message explicitly tells the CA that a
 given object exists, of a given type, and allows the client to send field
 updates to that object even if the client cannot currently see that object.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_UNDECLARE_OBJECT(1011)</strong> <code>args(uint32 do_id)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_UNDECLARE_OBJECT (1011)</strong></p>
+<pre><code>uint32 do_id
+</code></pre><blockquote>
 <p>Antithesis of above message: the object is no longer explicitly declared, and
 the client can no longer send updates on this object without seeing it.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_ADD_SESSION_OBJECT(1012)</strong> <code>args(uint32 do_id)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_ADD_SESSION_OBJECT (1012)</strong></p>
+<pre><code>uint32 do_id
+</code></pre><blockquote>
 <p>Declares the specified object to be a &quot;session object&quot; -- an avatar, for example --
 that is automatically cleaned up when the client disconnects.</p>
 <p>In addition, session objects are presumed to be required for the proper function of a client.
 After the client receives visibility on the object, if it is deleted by another process,
 or if the client loses visibility of the object, the client is automatically dropped.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_REMOVE_SESSION_OBJECT(1013)</strong> <code>args(uint32 do_id)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_REMOVE_SESSION_OBJECT (1013)</strong></p>
+<pre><code>uint32 do_id
+</code></pre><blockquote>
 <p>Antithesis of above message. The declared object is no longer tied to the client&#39;s
 session, and will therefore not be deleted if the client drops (nor will the client
 be dropped if this object is deleted).</p>
 </blockquote>
-<p><strong>CLIENTAGENT_SET_FIELDS_SENDABLE(1014)</strong><br>    <code>args(uint32 do_id, uint16 field_count, [uint16 field_id]*field_count)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_SET_FIELDS_SENDABLE (1014)</strong></p>
+<pre><code>uint32 do_id, uint16 field_count, [uint16 field_id]*field_count
+</code></pre><blockquote>
 <p>Override the security on certain fields for a given object. The specified fields
 are made sendable by the client regardless of ownsend/clsend. To undo the security
 override, send this message again without any field IDs, to clear the list of
 security-overridden fields for that object.</p>
 </blockquote>
 <h4 id="section-3-1-client-agent-control-messages">Section 3.1: Client Agent Control Messages</h4>
-<p><strong>CLIENTAGENT_OPEN_CHANNEL(1100)</strong> <code>args(uint64 channel)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_OPEN_CHANNEL (1100)</strong></p>
+<pre><code>uint64 channel
+</code></pre><blockquote>
 <p>Instruct the client session to open a channel on the MD. Messages sent to this
 new channel will be processed by the CA.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_CLOSE_CHANNEL(1101)</strong> <code>args(uint64 channel)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_CLOSE_CHANNEL (1101)</strong></p>
+<pre><code>uint64 channel
+</code></pre><blockquote>
 <p>This message is the antithesis of the message above. The channel is immediately
 closed, even if the channel was automatically opened.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_ADD_POST_REMOVE(1110)</strong> <code>args(blob datagram)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_ADD_POST_REMOVE (1110)</strong></p>
+<pre><code>blob datagram
+</code></pre><blockquote>
 <p>Similar to CONTROL_ADD_POST_REMOVE, this hangs a &quot;post-remove&quot; message on the
 client. If the client is ever disconnected, the post-remove messages will be
 sent out automatically.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_CLEAR_POST_REMOVE(1111)</strong> <code>args()</code>  </p>
+<p><strong>CLIENTAGENT_CLEAR_POST_REMOVE (1111)</strong> <code>No arguments</code>  </p>
 <blockquote>
 <p>Undoes all CLIENTAGENT_ADD_POST_REMOVE messages.</p>
 </blockquote>
-<h4 id="section-3-2-client-interest-messages">Section 3.2 Client Interest Messages</h4>
-<p><strong>CLIENTAGENT_ADD_INTEREST(1200)</strong><br>    <code>args(uint16 interest_id, uint32 parent_id, uint32 zone_id)</code>  </p>
-<blockquote>
+<h3 id="section-3-2-client-interest-messages">Section 3.2 Client Interest Messages</h3>
+<p><strong>CLIENTAGENT_ADD_INTEREST (1200)</strong></p>
+<pre><code>uint16 interest_id, uint32 parent_id, uint32 zone_id
+</code></pre><blockquote>
 <p>This message instructs the CA to open an interest, as if the client had
 requested the interest itself.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_ADD_INTEREST_MULTIPLE(1201)</strong><br>    <code>args(uint16 interest_id, uint32 parent_id,
-          uint16 zone_count, [uint32 zone_id]*zone_count)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_ADD_INTEREST_MULTIPLE (1201)</strong></p>
+<pre><code>uint16 interest_id, uint32 parent_id,
+uint16 zone_count, [uint32 zone_id]*zone_count
+</code></pre><blockquote>
 <p>This message instructs the CA to open an interest, as if the client had
 requested the interest itself.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_REMOVE_INTEREST(1203)</strong> <code>args(uint16 interest_id)</code>  </p>
-<blockquote>
+<p><strong>CLIENTAGENT_REMOVE_INTEREST (1203)</strong></p>
+<pre><code>uint16 interest_id
+</code></pre><blockquote>
 <p>The antithesis of the message above: cause an open interest to be closed. This
 is even valid for client-opened interests, if the interest_id matches a
 client-requested interest.</p>
 </blockquote>
-<p><strong>CLIENTAGENT_DONE_INTEREST_RESP(1204)</strong> <code>args(uint64 client_id, uint16 interest_id)</code></p>
-<blockquote>
+<p><strong>CLIENTAGENT_DONE_INTEREST_RESP (1204)</strong></p>
+<pre><code>uint64 client_id, uint16 interest_id
+</code></pre><blockquote>
 <p>Sent by the ClientAgent to the caller of CLIENTAGENT_ADD_INTEREST to inform
 them that the interest operation has completed.</p>
 </blockquote>

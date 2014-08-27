@@ -62,11 +62,11 @@
 
 
   <article class="content">
-    <h2 id="database-server-behavior">Database-Server Behavior</h2>
+    <h1 id="database-server-behavior">Database-Server Behavior</h1>
 <p><strong>Authors</strong><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>  </p>
-<h3 id="section-0-abstract">Section 0: Abstract</h3>
-<p>This section documents the messages involved in interacting with a Database
-Server. A Database Server is a component with a single, preconfigured channel.
+<h2 id="section-0-abstract">Section 0: Abstract</h2>
+<p>This documents the messages involved in interacting with a Database Server.
+A Database Server is a component with a single, preconfigured channel.
 This channel is used to request the Database Server to:</p>
 <ul>
 <li>Create new objects stored in the database.</li>
@@ -75,46 +75,64 @@ This channel is used to request the Database Server to:</p>
 </ul>
 <p>When one or more of a database object&#39;s values is updated through a set- or delete-
 operation, the database will broadcast the received message over the database messages
-channel (2 &lt;&lt; 32|do_id).  This behavior is default, but can be disabled through the daemon config.</p>
-<h3 id="section-1-database-server-messages">Section 1: Database Server Messages</h3>
+channel <code>(2 &lt;&lt; 32|do_id)</code>.  This behavior is default, but can be disabled through the daemon config.</p>
+<h2 id="section-1-database-server-messages">Section 1: Database Server Messages</h2>
 <p>The following is a list of database control messages:</p>
-<p><strong>DBSERVER_CREATE_OBJECT(3000)</strong><br>    <code>args(uint32 context, uint16 dclass_id, uint16 field_count,
-         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code><br><strong>DBSERVER_CREATE_OBJECT_RESP(3001)</strong><br>    <code>args(uint32 context, uint32 do_id)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_CREATE_OBJECT (3000)</strong></p>
+<pre><code>uint32 context, uint16 dclass_id, uint16 field_count, [uint16 field_id, &lt;VALUE&gt;]*field_count
+</code></pre><p><strong>DBSERVER_CREATE_OBJECT_RESP (3001)</strong></p>
+<pre><code>uint32 context, uint32 do_id
+</code></pre><blockquote>
 <p>This message creates a new object in the database with the given fields set to
 the given values.  If a field was not given, but has a default value, the default
 value is stored.</p>
 <p>If creation fails INVALID_DO_ID (0) is returned.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_GET_FIELD(3010)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id)</code><br><strong>DBSERVER_OBJECT_GET_FIELD_RESP(3011)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;])</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_GET_FIELD (3010)</strong></p>
+<pre><code>uint32 context, uint32 do_id, uint16 field_id
+</code></pre><p><strong>DBSERVER_OBJECT_GET_FIELD_RESP (3011)</strong></p>
+<pre><code>uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;]
+</code></pre><blockquote>
 <p>This message gets the value of a single field from an object in the database.
 If the field is not set, the response returns a failure.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_GET_FIELDS(3012)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_count,
-         [uint16 field_id]*field_count</code><br><strong>DBSERVER_OBJECT_GET_FIELDS_RESP(3013)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_count],
-         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_GET_FIELDS (3012)</strong></p>
+<pre><code>(uint32 context, uint32 do_id, uint16 field_count, [uint16 field_id]*field_count
+</code></pre><p><strong>DBSERVER_OBJECT_GET_FIELDS_RESP (3013)</strong></p>
+<pre><code>uint32 context, uint8 success, [uint16 field_count], [uint16 field_id, &lt;VALUE&gt;]*field_count
+</code></pre><blockquote>
 <p>This message gets the values of multiple fields from an object in the database.
 Database fields with no stored value are not included in the list of returned fields.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_GET_ALL(3014)</strong><br>    <code>args(uint32 context, uint32 do_id)</code><br><strong>DBSERVER_OBJECT_GET_ALL_RESP(3015)</strong><br>    <code>args(uint32 context, uint8 success,
-         [uint16 dclass_id, uint16 field_count],
-         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_GET_ALL (3014)</strong></p>
+<pre><code>uint32 context, uint32 do_id
+</code></pre><p><strong>DBSERVER_OBJECT_GET_ALL_RESP (3015)</strong></p>
+<pre><code>uint32 context, uint8 success,
+[uint16 dclass_id, uint16 field_count],
+[uint16 field_id, &lt;VALUE&gt;]*field_count)`
+</code></pre><blockquote>
 <p>This message queries all of the data stored in the database about an object.
 Database fields with no stored value are not included in the list of returned fields.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_SET_FIELD(3020)</strong><br>    <code>args(uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>DBSERVER_OBJECT_SET_FIELDS(3021)</strong><br>    <code>args(uint32 do_id, uint16 field_count, [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_SET_FIELD (3020)</strong></p>
+<pre><code>uint32 do_id, uint16 field_id, &lt;VALUE&gt;
+</code></pre><p><strong>DBSERVER_OBJECT_SET_FIELDS (3021)</strong></p>
+<pre><code>uint32 do_id, uint16 field_count, [uint16 field_id, &lt;VALUE&gt;]*field_count
+</code></pre><blockquote>
 <p>These messages replace an object&#39;s current stored values for given fields.
 For updates that are derived or dependent on previous values, consider
 using SET_FIELD(S)_IF_EQUALS message instead.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EQUALS(3022)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id, &lt;VALUE&gt; old, &lt;VALUE&gt; new)</code><br><strong>DBSERVER_OBJECT_SET_FIELD_IF_EQUALS_RESP(3023)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;])</code><br><strong>DBSERVER_OBJECT_SET_FIELDS_IF_EQUALS(3024)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_count,
-         [uint16 field_id, VALUE old, VALUE new]*field_count)</code><br><strong>DBSERVER_OBJECT_SET_FIELDS_IF_EQUALS_RESP(3025)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_count],
-         [uint16 field_id, &lt;VALUE&gt;]*field_count)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EQUALS (3022)</strong></p>
+<pre><code>uint32 context, uint32 do_id, uint16 field_id, &lt;VALUE&gt; old, &lt;VALUE&gt; new
+</code></pre><p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EQUALS_RESP (3023)</strong></p>
+<pre><code>uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;]
+</code></pre><p><strong>DBSERVER_OBJECT_SET_FIELDS_IF_EQUALS (3024)</strong></p>
+<pre><code>uint32 context, uint32 do_id, uint16 field_count,
+[uint16 field_id, VALUE old, VALUE new]*field_count
+</code></pre><p><strong>DBSERVER_OBJECT_SET_FIELDS_IF_EQUALS_RESP (3025)</strong></p>
+<pre><code>uint32 context, uint8 success, [uint16 field_count], [uint16 field_id, &lt;VALUE&gt;]*field_count
+</code></pre><blockquote>
 <p>These message replaces the current values of the given object with new values,
 but only if the &#39;old&#39; values match the current state of the database.</p>
 <p>This method of updating the database is used to prevent race conditions,
@@ -124,17 +142,24 @@ In this case, the current values of all non-empty fields will be returned after 
 <p>If any of the given fields are non-database or invalid, the entire transaction
 fails and no values are returned.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EMPTY(3026)</strong><br>    <code>args(uint32 context, uint32 do_id, uint16 field_id, &lt;VALUE&gt;)</code><br><strong>DBSERVER_OBJECT_SET_FIELD_IF_EMPTY_RESP(3027)</strong><br>    <code>args(uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;])</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EMPTY (3026)</strong></p>
+<pre><code>uint32 context, uint32 do_id, uint16 field_id, &lt;VALUE&gt;
+</code></pre><p><strong>DBSERVER_OBJECT_SET_FIELD_IF_EMPTY_RESP (3027)</strong></p>
+<pre><code>uint32 context, uint8 success, [uint16 field_id, &lt;VALUE&gt;]
+</code></pre><blockquote>
 <p>This message sets the given field if it does not currently have a value.<br>If the field is non-empty, the current value will be returned after FAILURE.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_DELETE_FIELD(3030)</strong><br>   <code>args(uint32 do_id, uint16 field_id)</code><br><strong>DBSERVER_OBJECT_DELETE_FIELDS(3031)</strong><br>   <code>args(uint32 do_id, uint16 field_count, [uint16 field_id]*field_count)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_DELETE_FIELD (3030)</strong></p>
+<pre><code>uint32 do_id, uint16 field_id
+</code></pre><p><strong>DBSERVER_OBJECT_DELETE_FIELDS (3031)</strong></p>
+<pre><code>uint32 do_id, uint16 field_count, [uint16 field_id]*field_count
+</code></pre><blockquote>
 <p>These messages delete individual fields from a database object.</p>
 <p>Fields with default values will be reset to the default instead.</p>
 </blockquote>
-<p><strong>DBSERVER_OBJECT_DELETE(3032)</strong><br>    <code>args(uint32 do_id)</code>  </p>
-<blockquote>
+<p><strong>DBSERVER_OBJECT_DELETE (3032)</strong></p>
+<pre><code>uint32 do_id
+</code></pre><blockquote>
 <p>This message removes the object with the given do_id from the server.  </p>
 </blockquote>
 

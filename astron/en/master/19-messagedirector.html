@@ -62,9 +62,9 @@
 
 
   <article class="content">
-    <h2 id="controlling-the-message-director">Controlling the Message Director</h2>
+    <h1 id="controlling-the-message-director">Controlling the Message Director</h1>
 <p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (08-30-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>  </p>
-<h3 id="section-0-control-messages">Section 0: Control Messages</h3>
+<h2 id="section-0-control-messages">Section 0: Control Messages</h2>
 <p>As Message Directors operate on a publish-subscribe model, a message will only
 be sent downlink (i.e. from a listener to a connector) if the connector
 specifically requested to be informed of messages on one of the message&#39;s
@@ -74,23 +74,32 @@ control message from a downstream \MD requesting to be added to a channel.</p>
 <p>Control messages are distinguished by two things:</p>
 <ol>
 <li>Control messages must be sent only to channel 1, and no other channels.</li>
-<li>Control messages OMIT the sender field; this is because the sender is
+<li>Control messages <strong>omit</strong> the sender field; this is because the sender is
 assumed (known) to be the MD on the other end of the link.</li>
 </ol>
 <p>The following control messages exist, with their respective formats:</p>
-<p><strong>CONTROL_ADD_CHANNEL(9000)</strong> <code>args(uint64 channel)</code><br><strong>CONTROL_REMOVE_CHANNEL(9001)</strong> <code>args(uint64 channel)</code>  </p>
-<blockquote>
+<p><strong>CONTROL_ADD_CHANNEL (9000)</strong></p>
+<pre><code>uint64 channel
+</code></pre><p><strong>CONTROL_REMOVE_CHANNEL (9001)</strong></p>
+<pre><code>uint64 channel
+</code></pre><blockquote>
 <p>These messages allow a downstream Message Director to (un)subscribe a channel.
 The argument is the channel to be added or removed from the subscriptions.</p>
 </blockquote>
-<p><strong>CONTROL_ADD_RANGE(9002)</strong><br><code>args(uint64 low_channel, uint64 high_channel)</code><br><strong>CONTROL_REMOVE_RANGE(9003)</strong><br><code>args(uint64 low_channel, uint64 high_channel)</code>  </p>
-<blockquote>
+<p><strong>CONTROL_ADD_RANGE (9002)</strong>  </p>
+<pre><code>uint64 low_channel, uint64 high_channel
+</code></pre><p><strong>CONTROL_REMOVE_RANGE (9003)</strong>  </p>
+<pre><code>uint64 low_channel, uint64 high_channel
+</code></pre><blockquote>
 <p>These messages add/remove an entire range of channels at once. The first
 argument(s) should be the lower channel to add. The second argument(s) is the
 upper channel of the range. The ranges are inclusive.</p>
 </blockquote>
-<p><strong>CONTROL_ADD_POST_REMOVE(9010)</strong> <code>args(uint64 sender, blob datagram)</code><br><strong>CONTROL_CLEAR_POST_REMOVES(9011)</strong> <code>args(uint64 sender)</code>  </p>
-<blockquote>
+<p><strong>CONTROL_ADD_POST_REMOVE (9010)</strong></p>
+<pre><code>uint64 sender, blob datagram
+</code></pre><p><strong>CONTROL_CLEAR_POST_REMOVES (9011)</strong></p>
+<pre><code>uint64 sender
+</code></pre><blockquote>
 <p>Often, Message Directors may be unexpectedly disconnected from one another, or
 a Message Director may crash while under normal operation without the chance
 to clean up. These control messages allow a downstream MD to schedule messages
@@ -107,16 +116,20 @@ CONTROL_CLEAR_POST_REMOVE is used to reset all of the on-disconnect messages.
 This may be used prior to a MD&#39;s clean shutdown, if it doesn&#39;t wish the
 unexpected-disconnect messages to be processed.</p>
 </blockquote>
-<p><strong>CONTROL_SET_CON_NAME(9012)</strong> <code>args(string name)</code><br><strong>CONTROL_SET_CON_URL(9013)</strong> <code>args(string url)</code>  </p>
-<blockquote>
+<p><strong>CONTROL_SET_CON_NAME (9012)</strong></p>
+<pre><code>string name
+</code></pre><p><strong>CONTROL_SET_CON_URL (9013)</strong></p>
+<pre><code>string url
+</code></pre><blockquote>
 <p>As every Astron daemon may include a webserver with debug information, it is
 often helpful to understand the purpose of incoming MD connections. A
 downstream MD may be configured with a specific name, and it may wish to
 inform the upstream MD what its name and webserver URL are. These control
 messages allow the downstream MD to communicate this information.</p>
 </blockquote>
-<p><strong>CONTROL_LOG_MESSAGE(9014)</strong> <code>args(blob message)</code></p>
-<blockquote>
+<p><strong>CONTROL_LOG_MESSAGE (9014)</strong></p>
+<pre><code>blob message
+</code></pre><blockquote>
 <p>In production layouts, it may be useful for AIs to log messages
 to the eventlogger infrastructure (preferably a fluentd instance) without
 needing to have redundant configuration on the AI servers, which could come

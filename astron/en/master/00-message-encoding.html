@@ -62,9 +62,9 @@
 
 
   <article class="content">
-    <h2 id="wire-format-of-messages-data-encoding">Wire Format of Messages &amp; Data Encoding</h2>
+    <h1 id="wire-format-encoding-of-messages">Wire Format &amp; Encoding of Messages</h1>
 <p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (08-30-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (09-04-2013)</em>   </p>
-<h3 id="section-0-anatomy-of-a-message">Section 0: Anatomy of a Message</h3>
+<h2 id="section-0-anatomy-of-a-message">Section 0: Anatomy of a Message</h2>
 <p>Astron Message Directors are linked via TCP streams. The linking forms a
 tree; that is, no routing loops may exist in a Message Director network. If a
 routing loop exists, the traffic will be amplified into a broadcast storm.</p>
@@ -95,7 +95,7 @@ e1 10 00 00 00 00 00 00 // Sender channel ID = 4321
 05 00 48 45 4c 4c 4f    // Payload for the message; in this example, the string
                            &quot;HELLO&quot; -- strings are prefixed with a length field of
                            their own, hence the 05 00
-</code></pre><h4 id="section-1-distributedobject-serialization">Section 1: DistributedObject Serialization</h4>
+</code></pre><h2 id="section-1-distributedobject-serialization">Section 1: DistributedObject Serialization</h2>
 <p>Some messages contained serialized data in their payload.<br>Serialization as used in messages means sending individual
 variables as raw little-endian byte data, with one value
 immediately following the previous value. String and blob type
@@ -107,8 +107,8 @@ the serialized data of all of the required fields of the object.
 The required is followed by a uint16 which specifices how many
 optional fields exist. If any optional fields exist, this is
 followed by <uint16 field_id, [DATA]> pairs for each optional
-field. It is RECOMMENDED that they be in low to high order of
-field_id.  Astron will always broadcast fields in that order.</p>
+field. It is <strong>recommended</strong> that they be in low to high order of
+field id.  Astron will always broadcast fields in that order.</p>
 <p>Example DC Class:</p>
 <pre><code>dclass DistributedAvatar
     name(string n) required db;  // ID = 0 | Value = &quot;Throgdar&quot;
@@ -123,7 +123,7 @@ field_id.  Astron will always broadcast fields in that order.</p>
 05 00 00 00 00 00 00 00 // Value = 5
 03 00 // field_id for &#39;z&#39; (ID = 3)
 00 00 00 00 00 00 00 00 // Value = 0
-</code></pre><h3 id="section-2-argument-types">Section 2: Argument Types</h3>
+</code></pre><h2 id="section-2-argument-types">Section 2: Argument Types</h2>
 <p>The following are the types used as message arguments:</p>
 <ul>
 <li><strong>bool</strong> - A single byte integer containg either 0 (False) or 1 (True).</li>
@@ -131,7 +131,7 @@ field_id.  Astron will always broadcast fields in that order.</p>
 <li><strong>string</strong> - A length-prefixed array of character data (no null-terminator).</li>
 <li><strong>uintN</strong> - An N-bit little-endian encoded integer value.</li>
 </ul>
-<h3 id="section-3-special-argument-shorthand">Section 3: Special Argument Shorthand</h3>
+<h2 id="section-3-special-argument-shorthand">Section 3: Special Argument Shorthand</h2>
 <pre><code>VALUE        // VALUE is the serialization of a DistributedObject field
 
 REQUIRED -&gt;  // REQUIRED is a group of
@@ -143,7 +143,7 @@ OTHER -&gt;    // OTHER is group of
 
     (field_id, &lt;VALUE&gt;)       // Field values paired with their ids, but only any remaining
                               // optional fields that may be provided by the caller.
-</code></pre><h3 id="section-4-message-type-ranges">Section 4: Message-type Ranges</h3>
+</code></pre><h2 id="section-4-message-type-ranges">Section 4: Message-type Ranges</h2>
 <p>Each component of the Astron daemon is given its own message-type range:</p>
 <ul>
 <li><strong>Client:</strong>              1 to  999</li>
@@ -153,7 +153,7 @@ OTHER -&gt;    // OTHER is group of
 <li><strong>Reserved:</strong>         4000 to 8999</li>
 <li><strong>Message Director:</strong> 9000 to 9999</li>
 </ul>
-<h3 id="section-5-reserved-channels-object-ids">Section 5: Reserved Channels | Object IDs</h3>
+<h2 id="section-5-reserved-channels-object-ids">Section 5: Reserved Channels | Object IDs</h2>
 <ul>
 <li><strong>Invalid Channel:</strong>         0</li>
 <li><strong>Control Messages:</strong>        1</li>
@@ -162,10 +162,10 @@ OTHER -&gt;    // OTHER is group of
 <li><strong>All Database Servers:</strong>   13</li>
 <li><strong>Reserved Channels:</strong>    &lt;999</li>
 </ul>
-<h3 id="section-6-reserved-ranges">Section 6: Reserved Ranges</h3>
+<h2 id="section-6-reserved-ranges">Section 6: Reserved Ranges</h2>
 <ul>
-<li><strong>Parent Messages:</strong>     1 &lt;&lt; 32</li>
-<li><strong>Reserved Ranges:</strong>  &lt;999 &lt;&lt; 32</li>
+<li><strong>Parent Messages:</strong>     1 <code>&lt;&lt; 32</code></li>
+<li><strong>Reserved Ranges:</strong>  &lt;999 <code>&lt;&lt; 32</code></li>
 </ul>
 
   </article>
