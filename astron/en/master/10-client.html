@@ -63,7 +63,9 @@
 
   <article class="content">
     <h1 id="client-protocol">Client Protocol</h1>
-<p><strong>Authors</strong><br><em>Sam &quot;CFSworks&quot; Edwards (09-17-2013)</em><br><em>Kevin &quot;Kestred&quot; Stenerson (10-08-2013)</em>  </p>
+<p><strong>Authors</strong>
+<em>Sam &quot;CFSworks&quot; Edwards (09-17-2013)</em>
+<em>Kevin &quot;Kestred&quot; Stenerson (10-08-2013)</em></p>
 <h2 id="section-0-abstract">Section 0: Abstract</h2>
 <p>This document describes the protocol used by clients to communicate with an Astron
 cluster. This should not be confused with the <em>internal protocol</em>, which is used
@@ -145,7 +147,7 @@ it will assume that the client has crashed and disconnect the client.</p>
 <p><strong>CLIENT_ENTER_OBJECT_REQUIRED (142)</strong></p>
 <pre><code>uint32 do_id, uint32 parent_id, uint32 zone_id, uint16 dclass_id, &lt;REQUIRED&gt;
 </code></pre><p><strong>CLIENT_ENTER_OBJECT_REQUIRED_OTHER (143)</strong></p>
-<pre><code>uint32 do_id, uint32 parent_id, uint32 zone_id, uint16 dclass_id, &lt;REQUIRED&gt;, &lt;OTHER&gt; 
+<pre><code>uint32 do_id, uint32 parent_id, uint32 zone_id, uint16 dclass_id, &lt;REQUIRED&gt;, &lt;OTHER&gt;
 </code></pre><blockquote>
 <p>Inform the client of an object entering one of the client&#39;s interests.</p>
 <p><strong>Note:</strong> This is analogous to the <a href="12-stateserver#section-2-2-object-visibility-messages">StateServer</a>
@@ -171,7 +173,7 @@ broadcast if the object is visible).</p>
 <pre><code>uint32 do_id, uint16 field_id, &lt;VALUE&gt;
 </code></pre><blockquote>
 <p>This is sent either by the Client Agent or the client to issue a field update
-on a given object. The format of this message is analogous to 
+on a given object. The format of this message is analogous to
 <code>STATESERVER_OBJECT_SET_FIELD</code> in the internal protocol.</p>
 </blockquote>
 <p><strong>CLIENT_OBJECT_SET_FIELDS (121)</strong></p>
@@ -201,7 +203,7 @@ instead.</p>
 will disconnect the client.</p>
 </blockquote>
 <h3 id="section-3-2-client-interest-messages">Section 3.2: Client Interest Messages</h3>
-<p><strong>CLIENT_ADD_INTEREST (200)</strong>  </p>
+<p><strong>CLIENT_ADD_INTEREST (200)</strong></p>
 <pre><code>uint32 context, uint16 interest_id, uint32 parent_id, uint32 zone_id
 </code></pre><blockquote>
 <p>The client sends this to open an interest in a single zone within a parent.
@@ -243,7 +245,7 @@ interests that might reuse the same interest ID.</p>
 </blockquote>
 <h2 id="section-4-disconnect-reasons">Section 4: Disconnect reasons</h2>
 <p>This section lists out a few of the disconnect reasons that the Client Agent
-may give in a <code>CLIENT_GO_GET_LOST</code> message, as well as a brief explanation for
+may give in a <code>CLIENT_EJECT</code> message, as well as a brief explanation for
 each.</p>
 <h3 id="section-4-1-ca-disconnect-reasons">Section 4.1: CA disconnect reasons</h3>
 <p>These are reasons sent by the Client Agent itself. As such, clients should be
